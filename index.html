@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ワンクリックコピー | サイドパネル</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      display: flex;
+      background-color: #f4f6f9;
+      color: #333;
+      min-height: 100vh;
+      overflow-x: hidden;
+      width: 100%;
+    }
+
+    /* サイドパネル（左側） */
+    .side-panel {
+      width: 380px;
+      min-width: 300px;
+      background-color: #ffffff;
+      border-right: 1px solid #e0e0e0;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      transition: transform 0.3s ease, width 0.3s ease, padding 0.3s ease;
+      z-index: 100;
+    }
+
+    /* パネルが閉じている状態 */
+    .side-panel.collapsed {
+      transform: translateX(-100%);
+      width: 0;
+      padding: 16px 0;
+      border-right: none;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 8px;
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #444;
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    /* モーダルを開くボタン & パネル開閉ボタン共通 */
+    .open-modal-btn, .panel-toggle-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 8px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .open-modal-btn:hover, .panel-toggle-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* パネルを閉じるボタン（パネル内） */
+    .close-panel-btn {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .close-panel-btn:hover { background: #d0d0d0; }
+
+    /* メイン画面側のトグルボタン（パネルが閉じている時に表示） */
+    .floating-toggle-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 99;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.2s;
+    }
+    .floating-toggle-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* リスト構造（スクロール可能） */
+    .card-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 2px;
+    }
+
+    .item-card {
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 8px 10px;
+      transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    /* ドラッグ中のスタイル */
+    .item-card.dragging {
+      opacity: 0.4;
+      border: 2px dashed #007bff;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      gap: 4px;
+    }
+
+    .card-label-area {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    /* ドラッグハンドル（掴みしろアイコン） */
+    .drag-handle {
+      cursor: grab;
+      font-size: 0.8rem;
+      color: #aaa;
+      padding: 0 2px;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .drag-handle:active {
+      cursor: grabbing;
+      color: #555;
+    }
+
+    .card-label {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #555;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* コピー完了メッセージ（枠付きバッジ風） */
+    .copy-feedback {
+      font-size: 0.55rem;
+      font-weight: bold;
+      color: #28a745;
+      background-color: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      padding: 1px 4px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .copy-feedback.show {
+      opacity: 1;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 0.6rem;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .edit-btn {
+      color: #007bff;
+      background: #e9f3ff;
+    }
+    .edit-btn:hover { background: #d0e5ff; }
+
+    .delete-btn {
+      color: #dc3545;
+      background: #f8d7da;
+    }
+    .delete-btn:hover { background: #f5c6cb; }
+
+    .copy-btn {
+      width: 100%;
+      text-align: left;
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #2c3e50;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .copy-btn:hover {
+      background-color: #e9f3ff;
+      border-color: #007bff;
+      color: #007bff;
+    }
+
+    .copy-btn::after {
+      content: "📋";
+      font-size: 0.7rem;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    /* メインエリア（比率崩れ防止の厳密なフレックス設計） */
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100vh;
+      min-width: 0; /* 重要：フレックスアイテムが子要素のサイズによって強制的に押し広げられるのを防ぐ */
+      overflow: hidden;
+    }
+
+    .main-header {
+      flex-shrink: 0;
+    }
+
+    .main-header h1 {
+      font-size: 1.4rem;
+      margin-bottom: 2px;
+    }
+
+    .main-header p {
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    /* 自由記入用の大きなカラム（メモエリア） */
+    .memo-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      padding: 12px;
+      min-height: 0; /* 重要：内部のtextareaがはみ出さずに正しくスクロール・縮小するようにする */
+    }
+
+    .memo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #444;
+      flex-shrink: 0;
+    }
+
+    .memo-status {
+      font-size: 0.7rem;
+      font-weight: normal;
+      color: #888;
+    }
+
+    .memo-textarea {
+      flex: 1;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+      min-height: 0; /* 重要：高さを親の領域内に完璧に収める */
+    }
+
+    .memo-textarea:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+    }
+
+    /* ポップアップ（モーダル）の背景 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      width: 90%;
+      max-width: 320px;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transform: translateY(-20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.show .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      height: 70px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2px;
+    }
+
+    .shortcut-hint {
+      font-size: 0.65rem;
+      color: #888;
+    }
+
+    .btn-submit {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 5px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .btn-submit:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+
+  <!-- パネルが閉じている時に表示される開閉ボタン -->
+  <button class="floating-toggle-btn" id="floatingToggleBtn" onclick="togglePanel()">
+    📁 パネルを開く
+  </button>
+
+  <!-- サイドパネル -->
+  <aside class="side-panel" id="sidePanel">
+    <div class="panel-header">
+      <span class="panel-title">コピーリスト</span>
+      <div class="header-actions">
+        <button class="open-modal-btn" id="openModal">追加</button>
+        <button class="close-panel-btn" onclick="togglePanel()" title="パネルを閉じる">✕</button>
+      </div>
+    </div>
+    
+    <div class="card-list" id="cardList">
+      <!-- サンプルアイテム1 -->
+      <div class="item-card" draggable="true" data-text="お世話になっております。よろしくお願いいたします。">
+        <div class="card-header">
+          <div class="card-label-area">
+            <span class="drag-handle" title="ドラッグして移動">☰</span>
+            <span class="card-label">メールテンプレート</span>
+            <span class="copy-feedback">コピーしました！</span>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn edit-btn" onclick="openEditModal(this)">編集</button>
+            <button class="action-btn delete-btn" onclick="deleteCard(this)">削除</button>
+          </div>
+        </div>
+        <button class="copy-btn" onclick="copyText(this)">
+          お世話になっております...
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- メインコンテンツ -->
+  <main class="main-content">
+    <div class="main-header">
+      <h1>メインエリア</h1>
+      <p>狭い環境でも比率が崩れず綺麗に収まります。</p>
+    </div>
+
+    <!-- 自由記入用カラム -->
+    <div class="memo-container">
+      <div class="memo-header">
+        <span>自由メモ・下書き用スペース</span>
+        <span class="memo-status" id="memoStatus">自動保存されます</span>
+      </div>
+      <textarea class="memo-textarea" id="memoTextarea" placeholder="ここに自由にテキストを入力したり、サイドパネルからコピーした文章の一時置き場として使えます..."></textarea>
+    </div>
+  </main>
+
+  <!-- 追加・編集用モーダル -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <div class="modal-title" id="modalTitle">新しい項目を追加</div>
+      
+      <div class="form-group">
+        <label class="form-label">ラベル（分類名など）</label>
+        <input type="text" id="inputLabel" class="form-input" placeholder="例: 住所、定型文など">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">コピーするテキスト</label>
+        <textarea id="inputText" class="form-textarea" placeholder="コピーさせたい内容を入力"></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <span class="shortcut-hint">Ctrl + Enter で保存</span>
+        <button class="btn-submit" id="saveBtn">追加する</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sidePanel = document.getElementById('sidePanel');
+    const floatingToggleBtn = document.getElementById('floatingToggleBtn');
+    const openModalBtn = document.getElementById('openModal');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const saveBtn = document.getElementById('saveBtn');
+    const modalTitle = document.getElementById('modalTitle');
+    const inputLabel = document.getElementById('inputLabel');
+    const inputText = document.getElementById('inputText');
+    const cardList = document.getElementById('cardList');
+    
+    const memoTextarea = document.getElementById('memoTextarea');
+    const memoStatus = document.getElementById('memoStatus');
+
+    let editingCard = null;
+
+    function togglePanel() {
+      sidePanel.classList.toggle('collapsed');
+      if (sidePanel.classList.contains('collapsed')) {
+        floatingToggleBtn.style.display = 'flex';
+      } else {
+        floatingToggleBtn.style.display = 'none';
+      }
+    }
+
+    floatingToggleBtn.style.display = 'none';
+
+    const STORAGE_KEY = 'one_click_copy_memo_content';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedMemo = localStorage.getItem(STORAGE_KEY);
+      if (savedMemo !== null) {
+        memoTextarea.value = savedMemo;
+      }
+    });
+
+    let saveTimeout = null;
+    memoTextarea.addEventListener('input', () => {
+      memoStatus.textContent = '保存中...';
+      
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        localStorage.setItem(STORAGE_KEY, memoTextarea.value);
+        memoStatus.textContent = '保存済み';
+        setTimeout(() => {
+          memoStatus.textContent = '自動保存されます';
+        }, 1500);
+      }, 500);
+    });
+
+    openModalBtn.addEventListener('click', () => {
+      editingCard = null;
+      modalTitle.textContent = '新しい項目を追加';
+      saveBtn.textContent = '追加する';
+      inputLabel.value = '';
+      inputText.value = '';
+      modalOverlay.classList.add('show');
+      inputLabel.focus();
+    });
+
+    function openEditModal(button) {
+      editingCard = button.closest('.item-card');
+      const labelText = editingCard.querySelector('.card-label').textContent;
+      const fullText = editingCard.getAttribute('data-text');
+
+      modalTitle.textContent = '項目を編集';
+      saveBtn.textContent = '更新する';
+      inputLabel.value = labelText;
+      inputText.value = fullText;
+      modalOverlay.classList.add('show');
+      inputLabel.focus();
+    }
+
+    const closeModal = () => {
+      modalOverlay.classList.remove('show');
+      editingCard = null;
+    };
+
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    function handleSave() {
+      const label = inputLabel.value.trim();
+      const text = inputText.value.trim();
+
+      if (!label || !text) {
+        alert('ラベルとコピーするテキストの両方を入力してください。');
+        return;
+      }
+
+      const previewText = text.length > 20 ? text.substring(0, 20) + '...' : text;
+
+      if (editingCard) {
+        editingCard.setAttribute('data-text', text);
+        editingCard.querySelector('.card-label').textContent = label;
+        editingCard.querySelector('.copy-btn').textContent = previewText;
+      } else {
+        const newCard = document.createElement('div');
+        newCard.className = 'item-card';
+        newCard.setAttribute('draggable', 'true');
+        newCard.setAttribute('data-text', text);
+        
+        newCard.innerHTML = `
+          <div class="card-header">
+            <div class="card-label-area">
+              <span class="drag-handle" title="ドラッグして移動">☰</span>
+              <span class="card-label">${escapeHTML(label)}</span>
+              <span class="copy-feedback">コピーしました！</span>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn edit-btn" onclick="openEditModal(this)">編集</button>
+              <button class="action-btn delete-btn" onclick="deleteCard(this)">削除</button>
+            </div>
+          </div>
+          <button class="copy-btn" onclick="copyText(this)">
+            ${escapeHTML(previewText)}
+          </button>
+        `;
+        
+        addDragAndDropEvents(newCard);
+        cardList.prepend(newCard);
+      }
+
+      closeModal();
+    }
+
+    saveBtn.addEventListener('click', handleSave);
+
+    function handleShortcut(e) {
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        handleSave();
+      }
+    }
+
+    inputLabel.addEventListener('keydown', handleShortcut);
+    inputText.addEventListener('keydown', handleShortcut);
+
+    function deleteCard(button) {
+      const card = button.closest('.item-card');
+      card.remove();
+    }
+
+    function addDragAndDropEvents(card) {
+      card.addEventListener('dragstart', (e) => {
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        document.querySelectorAll('.item-card').forEach(c => c.classList.remove('drag-over'));
+      });
+
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const draggingCard = document.querySelector('.dragging');
+        if (!draggingCard || draggingCard === card) return;
+
+        const rect = card.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+        
+        if (e.clientY < midpoint) {
+          cardList.insertBefore(draggingCard, card);
+        } else {
+          cardList.insertBefore(draggingCard, card.nextElementSibling);
+        }
+      });
+    }
+
+    document.querySelectorAll('.item-card').forEach(card => {
+      addDragAndDropEvents(card);
+    });
+
+    function copyText(button) {
+      const card = button.closest('.item-card');
+      const text = card.getAttribute('data-text');
+      const feedback = card.querySelector('.copy-feedback');
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showFeedback(feedback);
+        }).catch(() => {
+          fallbackCopyText(text, feedback);
+        });
+      } else {
+        fallbackCopyText(text, feedback);
+      }
+    }
+
+    function fallbackCopyText(text, feedback) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showFeedback(feedback);
+        } else {
+          alert('コピーに失敗しました。');
+        }
+      } catch (err) {
+        alert('コピーに対応していない環境です。');
+      }
+
+      document.body.removeChild(textArea);
+    }
+
+    function showFeedback(feedbackElement) {
+      feedbackElement.classList.add('show');
+      setTimeout(() => {
+        feedbackElement.classList.remove('show');
+      }, 1500);
+    }
+
+    function escapeHTML(str) {
+      const TheStr = str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+      return TheStr;
+    }
+  </script>
+
+</body>
+</html>
