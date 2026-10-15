@@ -18,18 +18,20 @@
       color: #333;
       min-height: 100vh;
       overflow-x: hidden;
+      width: 100%;
     }
 
     /* サイドパネル（左側） */
     .side-panel {
       width: 380px;
+      min-width: 300px;
       background-color: #ffffff;
       border-right: 1px solid #e0e0e0;
       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-      padding: 20px 16px;
+      padding: 16px 12px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       height: 100vh;
       position: sticky;
       top: 0;
@@ -41,7 +43,7 @@
     .side-panel.collapsed {
       transform: translateX(-100%);
       width: 0;
-      padding: 20px 0;
+      padding: 16px 0;
       border-right: none;
       box-shadow: none;
       overflow: hidden;
@@ -56,7 +58,7 @@
     }
 
     .panel-title {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: bold;
       color: #444;
       white-space: nowrap;
@@ -64,7 +66,7 @@
 
     .header-actions {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       align-items: center;
     }
 
@@ -74,8 +76,8 @@
       color: white;
       border: none;
       border-radius: 4px;
-      padding: 6px 10px;
-      font-size: 0.8rem;
+      padding: 5px 8px;
+      font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
       white-space: nowrap;
@@ -91,8 +93,8 @@
       color: #333;
       border: none;
       border-radius: 4px;
-      padding: 6px 8px;
-      font-size: 0.8rem;
+      padding: 5px 6px;
+      font-size: 0.75rem;
       cursor: pointer;
     }
     .close-panel-btn:hover { background: #d0d0d0; }
@@ -100,14 +102,14 @@
     /* メイン画面側のトグルボタン（パネルが閉じている時に表示） */
     .floating-toggle-btn {
       position: fixed;
-      top: 20px;
-      left: 20px;
+      top: 16px;
+      left: 16px;
       background-color: #007bff;
       color: white;
       border: none;
       border-radius: 6px;
-      padding: 8px 12px;
-      font-size: 0.85rem;
+      padding: 6px 10px;
+      font-size: 0.8rem;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -127,15 +129,15 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding-right: 4px;
+      gap: 8px;
+      padding-right: 2px;
     }
 
     .item-card {
       background: #fafafa;
       border: 1px solid #e5e5e5;
       border-radius: 8px;
-      padding: 10px 12px;
+      padding: 8px 10px;
       transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
 
@@ -150,21 +152,25 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 4px;
+      gap: 4px;
     }
 
     .card-label-area {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      min-width: 0;
+      flex: 1;
     }
 
     /* ドラッグハンドル（掴みしろアイコン） */
     .drag-handle {
       cursor: grab;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #aaa;
       padding: 0 2px;
       user-select: none;
+      flex-shrink: 0;
     }
     .drag-handle:active {
       cursor: grabbing;
@@ -172,22 +178,27 @@
     }
 
     .card-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: bold;
       color: #555;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* コピー完了メッセージ（枠付きバッジ風） */
     .copy-feedback {
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       font-weight: bold;
       color: #28a745;
       background-color: #e8f5e9;
       border: 1px solid #c8e6c9;
-      padding: 1px 5px;
+      padding: 1px 4px;
       border-radius: 4px;
       opacity: 0;
       transition: opacity 0.2s ease;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     .copy-feedback.show {
       opacity: 1;
@@ -195,15 +206,16 @@
 
     .card-actions {
       display: flex;
-      gap: 4px;
+      gap: 3px;
+      flex-shrink: 0;
     }
 
     .action-btn {
       background: none;
       border: none;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       cursor: pointer;
-      padding: 2px 5px;
+      padding: 2px 4px;
       border-radius: 4px;
       font-weight: bold;
     }
@@ -226,14 +238,15 @@
       background: #ffffff;
       border: 1px solid #ccc;
       border-radius: 6px;
-      padding: 8px 10px;
-      font-size: 0.9rem;
+      padding: 6px 8px;
+      font-size: 0.85rem;
       font-weight: 600;
       color: #2c3e50;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
     }
 
     .copy-btn:hover {
@@ -244,29 +257,30 @@
 
     .copy-btn::after {
       content: "📋";
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       opacity: 0.5;
+      flex-shrink: 0;
     }
 
     /* メインエリア */
     .main-content {
       flex: 1;
-      padding: 40px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       height: 100vh;
-      transition: padding-left 0.3s ease;
+      min-width: 0;
     }
 
     .main-header h1 {
-      font-size: 1.8rem;
-      margin-bottom: 4px;
+      font-size: 1.5rem;
+      margin-bottom: 2px;
     }
 
     .main-header p {
       color: #666;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     /* 自由記入用の大きなカラム（メモエリア） */
@@ -278,21 +292,22 @@
       border: 1px solid #e0e0e0;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      padding: 16px;
+      padding: 12px;
+      min-height: 0;
     }
 
     .memo-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
       font-weight: bold;
       color: #444;
     }
 
     .memo-status {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: normal;
       color: #888;
     }
@@ -300,10 +315,10 @@
     .memo-textarea {
       flex: 1;
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       line-height: 1.5;
       resize: none;
       outline: none;
@@ -338,13 +353,14 @@
 
     .modal-content {
       background: #ffffff;
-      width: 320px;
+      width: 90%;
+      max-width: 320px;
       border-radius: 8px;
-      padding: 20px;
+      padding: 16px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       transform: translateY(-20px);
       transition: transform 0.25s ease;
     }
@@ -354,7 +370,7 @@
     }
 
     .modal-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: bold;
       color: #333;
     }
@@ -366,7 +382,7 @@
     }
 
     .form-label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: bold;
       color: #555;
     }
@@ -376,23 +392,23 @@
       padding: 8px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .form-textarea {
       resize: vertical;
-      height: 80px;
+      height: 70px;
     }
 
     .modal-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .shortcut-hint {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: #888;
     }
 
@@ -400,10 +416,10 @@
       background: #007bff;
       color: white;
       border: none;
-      padding: 6px 16px;
+      padding: 5px 14px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: bold;
     }
     .btn-submit:hover { background: #0056b3; }
@@ -422,7 +438,7 @@
       <span class="panel-title">コピーリスト</span>
       <div class="header-actions">
         <button class="open-modal-btn" id="openModal">追加</button>
-        <button class="close-panel-btn" onclick="togglePanel()" title="パネルを閉じる">✕ 閉じる</button>
+        <button class="close-panel-btn" onclick="togglePanel()" title="パネルを閉じる">✕</button>
       </div>
     </div>
     
@@ -451,7 +467,7 @@
   <main class="main-content">
     <div class="main-header">
       <h1>メインエリア</h1>
-      <p>左上のボタンからサイドパネルの開閉ができます。</p>
+      <p>狭いサイドバーや拡張機能でも比率を崩さず綺麗に表示されます。</p>
     </div>
 
     <!-- 自由記入用カラム -->
@@ -502,7 +518,6 @@
 
     let editingCard = null;
 
-    // --- サイドパネルの開閉切り替え機能 ---
     function togglePanel() {
       sidePanel.classList.toggle('collapsed');
       if (sidePanel.classList.contains('collapsed')) {
@@ -512,11 +527,8 @@
       }
     }
 
-    // 初期状態ではパネルが開いているので、フロートボタンは非表示
     floatingToggleBtn.style.display = 'none';
-    // ------------------------------------
 
-    // --- メモの自動保存（LocalStorage）機能 ---
     const STORAGE_KEY = 'one_click_copy_memo_content';
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -539,7 +551,6 @@
         }, 1500);
       }, 500);
     });
-    // ----------------------------------------
 
     openModalBtn.addEventListener('click', () => {
       editingCard = null;
@@ -716,9 +727,10 @@
     }
 
     function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
+      TheStr = str.replace(/[&<>'"]/g, 
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
       );
+      return TheStr;
     }
   </script>
 
