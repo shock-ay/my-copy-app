@@ -12,19 +12,30 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
+    /* <body>自体はスクロールをなくし、外側へのみこむ */
     body {
-      display: flex;
       background-color: #f4f6f9;
       color: #333;
-      min-height: 100vh;
-      overflow-x: hidden;
-      width: 100%;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 【超重要】デザインの基準となる仮想のキャンバス（例: 横幅380pxを基準にする） */
+    .app-scaler {
+      width: 380px;
+      height: 100vh;
+      display: flex;
+      background-color: #f4f6f9;
+      transform-origin: top left; /* 左上を基準にして拡大縮小する */
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     /* サイドパネル（左側） */
     .side-panel {
       width: 380px;
-      min-width: 300px;
       background-color: #ffffff;
       border-right: 1px solid #e0e0e0;
       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
@@ -33,20 +44,16 @@
       flex-direction: column;
       gap: 12px;
       height: 100vh;
-      position: sticky;
+      position: absolute;
+      left: 0;
       top: 0;
-      transition: transform 0.3s ease, width 0.3s ease, padding 0.3s ease;
+      transition: transform 0.3s ease;
       z-index: 100;
     }
 
     /* パネルが閉じている状態 */
     .side-panel.collapsed {
       transform: translateX(-100%);
-      width: 0;
-      padding: 16px 0;
-      border-right: none;
-      box-shadow: none;
-      overflow: hidden;
     }
 
     .panel-header {
@@ -70,7 +77,6 @@
       align-items: center;
     }
 
-    /* モーダルを開くボタン & パネル開閉ボタン共通 */
     .open-modal-btn, .panel-toggle-btn {
       background-color: #007bff;
       color: white;
@@ -87,7 +93,6 @@
       background-color: #0056b3;
     }
 
-    /* パネルを閉じるボタン（パネル内） */
     .close-panel-btn {
       background: #e0e0e0;
       color: #333;
@@ -99,7 +104,6 @@
     }
     .close-panel-btn:hover { background: #d0d0d0; }
 
-    /* メイン画面側のトグルボタン（パネルが閉じている時に表示） */
     .floating-toggle-btn {
       position: fixed;
       top: 16px;
@@ -117,13 +121,9 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: background-color 0.2s;
     }
-    .floating-toggle-btn:hover {
-      background-color: #0056b3;
-    }
+    .floating-toggle-btn:hover { background-color: #0056b3; }
 
-    /* リスト構造（スクロール可能） */
     .card-list {
       flex: 1;
       overflow-y: auto;
@@ -138,10 +138,8 @@
       border: 1px solid #e5e5e5;
       border-radius: 8px;
       padding: 8px 10px;
-      transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
 
-    /* ドラッグ中のスタイル */
     .item-card.dragging {
       opacity: 0.4;
       border: 2px dashed #007bff;
@@ -163,7 +161,6 @@
       flex: 1;
     }
 
-    /* ドラッグハンドル（掴みしろアイコン） */
     .drag-handle {
       cursor: grab;
       font-size: 0.8rem;
@@ -172,10 +169,7 @@
       user-select: none;
       flex-shrink: 0;
     }
-    .drag-handle:active {
-      cursor: grabbing;
-      color: #555;
-    }
+    .drag-handle:active { cursor: grabbing; color: #555; }
 
     .card-label {
       font-size: 0.7rem;
@@ -186,7 +180,6 @@
       text-overflow: ellipsis;
     }
 
-    /* コピー完了メッセージ（枠付きバッジ風） */
     .copy-feedback {
       font-size: 0.55rem;
       font-weight: bold;
@@ -200,9 +193,7 @@
       flex-shrink: 0;
       white-space: nowrap;
     }
-    .copy-feedback.show {
-      opacity: 1;
-    }
+    .copy-feedback.show { opacity: 1; }
 
     .card-actions {
       display: flex;
@@ -220,16 +211,10 @@
       font-weight: bold;
     }
 
-    .edit-btn {
-      color: #007bff;
-      background: #e9f3ff;
-    }
+    .edit-btn { color: #007bff; background: #e9f3ff; }
     .edit-btn:hover { background: #d0e5ff; }
 
-    .delete-btn {
-      color: #dc3545;
-      background: #f8d7da;
-    }
+    .delete-btn { color: #dc3545; background: #f8d7da; }
     .delete-btn:hover { background: #f5c6cb; }
 
     .copy-btn {
@@ -249,46 +234,25 @@
       gap: 8px;
     }
 
-    .copy-btn:hover {
-      background-color: #e9f3ff;
-      border-color: #007bff;
-      color: #007bff;
-    }
+    .copy-btn:hover { background-color: #e9f3ff; border-color: #007bff; color: #007bff; }
+    .copy-btn::after { content: "📋"; font-size: 0.7rem; opacity: 0.5; flex-shrink: 0; }
 
-    .copy-btn::after {
-      content: "📋";
-      font-size: 0.7rem;
-      opacity: 0.5;
-      flex-shrink: 0;
-    }
-
-    /* メインエリア（比率崩れ防止の厳密なフレックス設計） */
+    /* メインエリア */
     .main-content {
-      flex: 1;
+      position: absolute;
+      left: 380px;
+      right: 0;
+      top: 0;
+      height: 100vh;
       padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      height: 100vh;
-      min-width: 0; /* 重要：フレックスアイテムが子要素のサイズによって強制的に押し広げられるのを防ぐ */
-      overflow: hidden;
     }
 
-    .main-header {
-      flex-shrink: 0;
-    }
+    .main-header h1 { font-size: 1.4rem; margin-bottom: 2px; }
+    .main-header p { color: #666; font-size: 0.85rem; }
 
-    .main-header h1 {
-      font-size: 1.4rem;
-      margin-bottom: 2px;
-    }
-
-    .main-header p {
-      color: #666;
-      font-size: 0.85rem;
-    }
-
-    /* 自由記入用の大きなカラム（メモエリア） */
     .memo-container {
       flex: 1;
       display: flex;
@@ -298,7 +262,7 @@
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       padding: 12px;
-      min-height: 0; /* 重要：内部のtextareaがはみ出さずに正しくスクロール・縮小するようにする */
+      min-height: 0;
     }
 
     .memo-header {
@@ -312,11 +276,7 @@
       flex-shrink: 0;
     }
 
-    .memo-status {
-      font-size: 0.7rem;
-      font-weight: normal;
-      color: #888;
-    }
+    .memo-status { font-size: 0.7rem; font-weight: normal; color: #888; }
 
     .memo-textarea {
       flex: 1;
@@ -328,15 +288,11 @@
       line-height: 1.5;
       resize: none;
       outline: none;
-      min-height: 0; /* 重要：高さを親の領域内に完璧に収める */
+      min-height: 0;
     }
+    .memo-textarea:focus { border-color: #007bff; box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15); }
 
-    .memo-textarea:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
-    }
-
-    /* ポップアップ（モーダル）の背景 */
+    /* モーダル */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -352,156 +308,100 @@
       transition: opacity 0.25s ease;
       z-index: 1000;
     }
-
-    .modal-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .modal-overlay.show { opacity: 1; pointer-events: auto; }
 
     .modal-content {
       background: #ffffff;
       width: 90%;
-      max-width: 320px;
+      max-width: 300px;
       border-radius: 8px;
       padding: 16px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       display: flex;
       flex-direction: column;
       gap: 10px;
-      transform: translateY(-20px);
-      transition: transform 0.25s ease;
     }
 
-    .modal-overlay.show .modal-content {
-      transform: translateY(0);
-    }
-
-    .modal-title {
-      font-size: 0.95rem;
-      font-weight: bold;
-      color: #333;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .form-label {
-      font-size: 0.75rem;
-      font-weight: bold;
-      color: #555;
-    }
-
-    .form-input, .form-textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 0.85rem;
-    }
-
-    .form-textarea {
-      resize: vertical;
-      height: 70px;
-    }
-
-    .modal-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 2px;
-    }
-
-    .shortcut-hint {
-      font-size: 0.65rem;
-      color: #888;
-    }
-
-    .btn-submit {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 5px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
+    .modal-title { font-size: 0.95rem; font-weight: bold; color: #333; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-label { font-size: 0.75rem; font-weight: bold; color: #555; }
+    .form-input, .form-textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
+    .form-textarea { resize: vertical; height: 70px; }
+    .modal-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
+    .shortcut-hint { font-size: 0.65rem; color: #888; }
+    .btn-submit { background: #007bff; color: white; border: none; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
     .btn-submit:hover { background: #0056b3; }
   </style>
 </head>
 <body>
 
-  <!-- パネルが閉じている時に表示される開閉ボタン -->
-  <button class="floating-toggle-btn" id="floatingToggleBtn" onclick="togglePanel()">
-    📁 パネルを開く
-  </button>
+  <!-- 全体を包み込んで強制的に等倍フィットさせるラッパー -->
+  <div class="app-scaler" id="appScaler">
 
-  <!-- サイドパネル -->
-  <aside class="side-panel" id="sidePanel">
-    <div class="panel-header">
-      <span class="panel-title">コピーリスト</span>
-      <div class="header-actions">
-        <button class="open-modal-btn" id="openModal">追加</button>
-        <button class="close-panel-btn" onclick="togglePanel()" title="パネルを閉じる">✕</button>
-      </div>
-    </div>
-    
-    <div class="card-list" id="cardList">
-      <!-- サンプルアイテム1 -->
-      <div class="item-card" draggable="true" data-text="お世話になっております。よろしくお願いいたします。">
-        <div class="card-header">
-          <div class="card-label-area">
-            <span class="drag-handle" title="ドラッグして移動">☰</span>
-            <span class="card-label">メールテンプレート</span>
-            <span class="copy-feedback">コピーしました！</span>
-          </div>
-          <div class="card-actions">
-            <button class="action-btn edit-btn" onclick="openEditModal(this)">編集</button>
-            <button class="action-btn delete-btn" onclick="deleteCard(this)">削除</button>
-          </div>
+    <button class="floating-toggle-btn" id="floatingToggleBtn" onclick="togglePanel()">
+      📁 パネルを開く
+    </button>
+
+    <!-- サイドパネル -->
+    <aside class="side-panel" id="sidePanel">
+      <div class="panel-header">
+        <span class="panel-title">コピーリスト</span>
+        <div class="header-actions">
+          <button class="open-modal-btn" id="openModal">追加</button>
+          <button class="close-panel-btn" onclick="togglePanel()" title="パネルを閉じる">✕</button>
         </div>
-        <button class="copy-btn" onclick="copyText(this)">
-          お世話になっております...
-        </button>
       </div>
-    </div>
-  </aside>
-
-  <!-- メインコンテンツ -->
-  <main class="main-content">
-    <div class="main-header">
-      <h1>メインエリア</h1>
-      <p>狭い環境でも比率が崩れず綺麗に収まります。</p>
-    </div>
-
-    <!-- 自由記入用カラム -->
-    <div class="memo-container">
-      <div class="memo-header">
-        <span>自由メモ・下書き用スペース</span>
-        <span class="memo-status" id="memoStatus">自動保存されます</span>
+      
+      <div class="card-list" id="cardList">
+        <div class="item-card" draggable="true" data-text="お世話になっております。よろしくお願いいたします。">
+          <div class="card-header">
+            <div class="card-label-area">
+              <span class="drag-handle" title="ドラッグして移動">☰</span>
+              <span class="card-label">メールテンプレート</span>
+              <span class="copy-feedback">コピーしました！</span>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn edit-btn" onclick="openEditModal(this)">編集</button>
+              <button class="action-btn delete-btn" onclick="deleteCard(this)">削除</button>
+            </div>
+          </div>
+          <button class="copy-btn" onclick="copyText(this)">
+            お世話になっております...
+          </button>
+        </div>
       </div>
-      <textarea class="memo-textarea" id="memoTextarea" placeholder="ここに自由にテキストを入力したり、サイドパネルからコピーした文章の一時置き場として使えます..."></textarea>
-    </div>
-  </main>
+    </aside>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+      <div class="main-header">
+        <h1>メインエリア</h1>
+        <p>比率を保ったまま自動で綺麗に収まります。</p>
+      </div>
+
+      <div class="memo-container">
+        <div class="memo-header">
+          <span>自由メモ・下書き用スペース</span>
+          <span class="memo-status" id="memoStatus">自動保存されます</span>
+        </div>
+        <textarea class="memo-textarea" id="memoTextarea" placeholder="ここに自由にテキストを入力..."></textarea>
+      </div>
+    </main>
+
+  </div>
 
   <!-- 追加・編集用モーダル -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
       <div class="modal-title" id="modalTitle">新しい項目を追加</div>
-      
       <div class="form-group">
-        <label class="form-label">ラベル（分類名など）</label>
-        <input type="text" id="inputLabel" class="form-input" placeholder="例: 住所、定型文など">
+        <label class="form-label">ラベル</label>
+        <input type="text" id="inputLabel" class="form-input" placeholder="例: 住所">
       </div>
-
       <div class="form-group">
         <label class="form-label">コピーするテキスト</label>
-        <textarea id="inputText" class="form-textarea" placeholder="コピーさせたい内容を入力"></textarea>
+        <textarea id="inputText" class="form-textarea" placeholder="内容を入力"></textarea>
       </div>
-
       <div class="modal-footer">
         <span class="shortcut-hint">Ctrl + Enter で保存</span>
         <button class="btn-submit" id="saveBtn">追加する</button>
@@ -510,6 +410,28 @@
   </div>
 
   <script>
+    // --- 拡張機能のサイドバー幅に合わせて自動スケール（比率維持）させる処理 ---
+    function autoResizeApp() {
+      const scaler = document.getElementById('appScaler');
+      const baseWidth = 900; // デザインの基本全体幅（サイドパネル380px ＋ メインエリア520px想定）
+      const currentWidth = window.innerWidth;
+      
+      if (currentWidth < baseWidth) {
+        const scale = currentWidth / baseWidth;
+        scaler.style.transform = `scale(${scale})`;
+        scaler.style.width = `${baseWidth}px`;
+        scaler.style.height = `${100 / scale}vh`;
+      } else {
+        scaler.style.transform = 'scale(1)';
+        scaler.style.width = '100vw';
+        scaler.style.height = '100vh';
+      }
+    }
+
+    window.addEventListener('resize', autoResizeApp);
+    window.addEventListener('DOMContentLoaded', autoResizeApp);
+    // -----------------------------------------------------------------
+
     const sidePanel = document.getElementById('sidePanel');
     const floatingToggleBtn = document.getElementById('floatingToggleBtn');
     const openModalBtn = document.getElementById('openModal');
@@ -519,7 +441,6 @@
     const inputLabel = document.getElementById('inputLabel');
     const inputText = document.getElementById('inputText');
     const cardList = document.getElementById('cardList');
-    
     const memoTextarea = document.getElementById('memoTextarea');
     const memoStatus = document.getElementById('memoStatus');
 
@@ -548,14 +469,11 @@
     let saveTimeout = null;
     memoTextarea.addEventListener('input', () => {
       memoStatus.textContent = '保存中...';
-      
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
         localStorage.setItem(STORAGE_KEY, memoTextarea.value);
         memoStatus.textContent = '保存済み';
-        setTimeout(() => {
-          memoStatus.textContent = '自動保存されます';
-        }, 1500);
+        setTimeout(() => { memoStatus.textContent = '自動保存されます'; }, 1500);
       }, 500);
     });
 
@@ -734,10 +652,9 @@
     }
 
     function escapeHTML(str) {
-      const TheStr = str.replace(/[&<>'"]/g, 
+      return str.replace(/[&<>'"]/g, 
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
       );
-      return TheStr;
     }
   </script>
 
