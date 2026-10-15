@@ -12,25 +12,22 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    /* <body>自体はスクロールをなくし、外側へのみこむ */
+    /* 画面全体：高さは固定し、横幅が狭い場合は横スクロールを許可する */
     body {
       background-color: #f4f6f9;
       color: #333;
-      width: 100vw;
       height: 100vh;
-      overflow: hidden;
+      overflow-y: hidden;
+      overflow-x: auto; /* 横幅が足りない時はスクロールさせる */
     }
 
-    /* 【超重要】デザインの基準となる仮想のキャンバス（例: 横幅380pxを基準にする） */
-    .app-scaler {
-      width: 380px;
+    /* アプリ全体のコンテナ（デザインの基準となる固定幅: 900px、高さ: 100vh） */
+    .app-container {
+      width: 900px;
       height: 100vh;
       display: flex;
       background-color: #f4f6f9;
-      transform-origin: top left; /* 左上を基準にして拡大縮小する */
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: relative;
     }
 
     /* サイドパネル（左側） */
@@ -241,7 +238,7 @@
     .main-content {
       position: absolute;
       left: 380px;
-      right: 0;
+      width: 520px; /* メインエリアの固定幅 */
       top: 0;
       height: 100vh;
       padding: 20px;
@@ -335,8 +332,8 @@
 </head>
 <body>
 
-  <!-- 全体を包み込んで強制的に等倍フィットさせるラッパー -->
-  <div class="app-scaler" id="appScaler">
+  <!-- 縦の比率（高さ100vh）を維持し、横スクロールに対応するコンテナ -->
+  <div class="app-container">
 
     <button class="floating-toggle-btn" id="floatingToggleBtn" onclick="togglePanel()">
       📁 パネルを開く
@@ -376,7 +373,7 @@
     <main class="main-content">
       <div class="main-header">
         <h1>メインエリア</h1>
-        <p>比率を保ったまま自動で綺麗に収まります。</p>
+        <p>縦の高さはぴったり収まり、横スクロールで快適に使えます。</p>
       </div>
 
       <div class="memo-container">
@@ -410,28 +407,6 @@
   </div>
 
   <script>
-    // --- 拡張機能のサイドバー幅に合わせて自動スケール（比率維持）させる処理 ---
-    function autoResizeApp() {
-      const scaler = document.getElementById('appScaler');
-      const baseWidth = 900; // デザインの基本全体幅（サイドパネル380px ＋ メインエリア520px想定）
-      const currentWidth = window.innerWidth;
-      
-      if (currentWidth < baseWidth) {
-        const scale = currentWidth / baseWidth;
-        scaler.style.transform = `scale(${scale})`;
-        scaler.style.width = `${baseWidth}px`;
-        scaler.style.height = `${100 / scale}vh`;
-      } else {
-        scaler.style.transform = 'scale(1)';
-        scaler.style.width = '100vw';
-        scaler.style.height = '100vh';
-      }
-    }
-
-    window.addEventListener('resize', autoResizeApp);
-    window.addEventListener('DOMContentLoaded', autoResizeApp);
-    // -----------------------------------------------------------------
-
     const sidePanel = document.getElementById('sidePanel');
     const floatingToggleBtn = document.getElementById('floatingToggleBtn');
     const openModalBtn = document.getElementById('openModal');
