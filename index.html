@@ -347,14 +347,19 @@
       height: 80px;
     }
 
+    /* 新規セット追加の折りたたみ部分 */
     .form-add-box {
-      display: flex;
+      display: none; /* 初期状態は非表示 */
       flex-direction: column;
       gap: 6px;
       background: #f9f9f9;
       padding: 8px;
       border-radius: 6px;
       border: 1px solid #eee;
+      margin-top: 4px;
+    }
+    .form-add-box.show {
+      display: flex; /* 開いたときに入力欄を表示 */
     }
 
     .section-header-row {
@@ -439,6 +444,19 @@
     }
     .btn-submit:hover { background: #0056b3; }
 
+    .btn-add-toggle {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .btn-add-toggle:hover { background: #5a6268; }
+
     .btn-add-sub {
       background: #28a745;
       color: white;
@@ -449,6 +467,7 @@
       font-size: 0.75rem;
       font-weight: bold;
       white-space: nowrap;
+      align-self: flex-end;
     }
     .btn-add-sub:hover { background: #218838; }
 
@@ -544,11 +563,14 @@
       <div class="form-group">
         <div class="section-header-row">
           <label class="form-label" style="margin-bottom: 0;">新しいセットを追加</label>
-          <button class="btn-add-sub" id="addCompanyBtn">追加する</button>
+          <!-- ▼ 開閉用トグルボタンに変更 -->
+          <button class="btn-add-toggle" id="toggleAddBoxBtn">＋ 新規追加</button>
         </div>
-        <div class="form-add-box" style="margin-top: 4px;">
+        <!-- ▼ 通常時はたたまれている入力ボックス -->
+        <div class="form-add-box" id="formAddBox">
           <input type="text" id="newCompanyName" class="form-input" placeholder="会社名">
           <input type="email" id="newEmailAddress" class="form-input" placeholder="メールアドレス">
+          <button class="btn-add-sub" id="addCompanyBtn">登録する</button>
         </div>
       </div>
 
@@ -930,6 +952,8 @@
     const newCompanyName = document.getElementById('newCompanyName');
     const newEmailAddress = document.getElementById('newEmailAddress');
     const addCompanyBtn = document.getElementById('addCompanyBtn');
+    const toggleAddBoxBtn = document.getElementById('toggleAddBoxBtn');
+    const formAddBox = document.getElementById('formAddBox');
 
     window.addEventListener('DOMContentLoaded', () => {
       loadItems();
@@ -943,11 +967,25 @@
 
     const closeMemoModal = () => {
       memoModalOverlay.classList.remove('show');
+      // モーダルを閉じるときに入力欄も折りたたみに戻す
+      formAddBox.classList.remove('show');
+      toggleAddBoxBtn.textContent = '＋ 新規追加';
     };
 
     closeMemoBtn.addEventListener('click', closeMemoModal);
     memoModalOverlay.addEventListener('click', (e) => {
       if (e.target === memoModalOverlay) closeMemoModal();
+    });
+
+    // ▼ 「新規追加」トグルボタンのクリック処理
+    toggleAddBoxBtn.addEventListener('click', () => {
+      formAddBox.classList.toggle('show');
+      if (formAddBox.classList.contains('show')) {
+        toggleAddBoxBtn.textContent = '閉じる';
+        newCompanyName.focus();
+      } else {
+        toggleAddBoxBtn.textContent = '＋ 新規追加';
+      }
     });
 
     window.addEventListener('keydown', (e) => {
@@ -997,6 +1035,10 @@
       newEmailAddress.value = '';
       saveCompanies();
       renderCompaniesList();
+
+      // 登録したら入力欄を自動でたたむ
+      formAddBox.classList.remove('show');
+      toggleAddBoxBtn.textContent = '＋ 新規追加';
     });
 
     function registerEmailToCopyList(id, button) {
@@ -1016,19 +1058,15 @@
         text: comp.email
       };
 
-      // --- グループ内では一番上、ラベルの階層内では2つ目以降が下に順番に並ぶように挿入する処理 ---
       const groupItems = copyItems.filter(item => (item.group || '未分類') === targetGroup);
       const labelItems = groupItems.filter(item => item.label === targetLabel);
 
       if (groupItems.length === 0) {
-        // グループ自体が存在しない場合は先頭に追加
         copyItems.unshift(newItem);
       } else if (labelItems.length === 0) {
-        // 同じグループはあるが、同名ラベルがまだない場合は、そのグループの先頭に挿入
         const firstGroupIndex = copyItems.findIndex(item => (item.group || '未分類') === targetGroup);
         copyItems.splice(firstGroupIndex, 0, newItem);
       } else {
-        // すでに同名ラベルの項目が存在する場合は、そのラベルの最後の項目のすぐ後ろ（下）に挿入
         const lastSameLabelItem = labelItems[labelItems.length - 1];
         const insertIndex = copyItems.findIndex(item => item.id === lastSameLabelItem.id) + 1;
         copyItems.splice(insertIndex, 0, newItem);
@@ -1037,7 +1075,7 @@
       saveItems();
       renderCards();
 
-      // --- ボタンの表示切り替えアニメーション処理 ---
+      // ボタンの表示切り替えアニメーション処理
       if (button.dataset.isAnimating === 'true') return;
       button.dataset.isAnimating = 'true';
 
