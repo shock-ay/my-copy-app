@@ -33,18 +33,7 @@
       height: 100vh;
       position: sticky;
       top: 0;
-      transition: transform 0.3s ease, width 0.3s ease, padding 0.3s ease;
       z-index: 100;
-    }
-
-    /* パネルが閉じている状態 */
-    .side-panel.collapsed {
-      transform: translateX(-100%);
-      width: 0;
-      padding: 20px 0;
-      border-right: none;
-      box-shadow: none;
-      overflow: hidden;
     }
 
     .panel-header {
@@ -68,8 +57,8 @@
       align-items: center;
     }
 
-    /* モーダルを開くボタン & パネル開閉ボタン共通 */
-    .open-modal-btn, .panel-toggle-btn {
+    /* モーダルを開くボタン */
+    .open-modal-btn {
       background-color: #007bff;
       color: white;
       border: none;
@@ -81,43 +70,7 @@
       white-space: nowrap;
     }
 
-    .open-modal-btn:hover, .panel-toggle-btn:hover {
-      background-color: #0056b3;
-    }
-
-    /* パネルを閉じるボタン（パネル内） */
-    .close-panel-btn {
-      background: #e0e0e0;
-      color: #333;
-      border: none;
-      border-radius: 4px;
-      padding: 6px 8px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    .close-panel-btn:hover { background: #d0d0d0; }
-
-    /* メイン画面側のトグルボタン（パネルが閉じている時に表示） */
-    .floating-toggle-btn {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 12px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      z-index: 99;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background-color 0.2s;
-    }
-    .floating-toggle-btn:hover {
+    .open-modal-btn:hover {
       background-color: #0056b3;
     }
 
@@ -345,18 +298,12 @@
 </head>
 <body>
 
-  <!-- パネルが閉じている時に表示される開閉ボタン -->
-  <button class="floating-toggle-btn" id="floatingToggleBtn" onclick="togglePanel()">
-    📁 パネルを開く
-  </button>
-
   <!-- サイドパネル -->
   <aside class="side-panel" id="sidePanel">
     <div class="panel-header">
       <span class="panel-title">コピーリスト</span>
       <div class="header-actions">
         <button class="open-modal-btn" id="openModal">追加</button>
-        <button class="close-panel-btn" onclick="togglePanel()" title="パネルを閉じる">✕ 閉じる</button>
       </div>
     </div>
     
@@ -404,8 +351,6 @@
   </div>
 
   <script>
-    const sidePanel = document.getElementById('sidePanel');
-    const floatingToggleBtn = document.getElementById('floatingToggleBtn');
     const openModalBtn = document.getElementById('openModal');
     const modalOverlay = document.getElementById('modalOverlay');
     const saveBtn = document.getElementById('saveBtn');
@@ -415,20 +360,6 @@
     const cardList = document.getElementById('cardList');
 
     let editingCard = null;
-
-    // --- サイドパネルの開閉切り替え機能 ---
-    function togglePanel() {
-      sidePanel.classList.toggle('collapsed');
-      if (sidePanel.classList.contains('collapsed')) {
-        floatingToggleBtn.style.display = 'flex';
-      } else {
-        floatingToggleBtn.style.display = 'none';
-      }
-    }
-
-    // 初期状態ではパネルが開いているので、フロートボタンは非表示
-    floatingToggleBtn.style.display = 'none';
-    // ------------------------------------
 
     openModalBtn.addEventListener('click', () => {
       editingCard = null;
