@@ -87,20 +87,63 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 14px;
       padding-right: 4px;
     }
 
-    .item-card {
+    /* グループごとにまとめるコンテナカード */
+    .group-card {
       background: #fafafa;
       border: 1px solid #e5e5e5;
       border-radius: 8px;
-      padding: 10px 12px;
-      transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: default;
+      transition: opacity 0.2s, border-color 0.2s;
     }
 
-    /* ドラッグ中のスタイル */
-    .item-card.dragging {
+    .group-card.dragging {
+      opacity: 0.4;
+      border: 2px dashed #007bff;
+    }
+
+    .group-header {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e5e5e5;
+      padding-bottom: 6px;
+      cursor: grab;
+      user-select: none;
+    }
+    .group-header:active {
+      cursor: grabbing;
+    }
+
+    /* グループ内の各項目 */
+    .group-items-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item-block {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+
+    .item-block.dragging {
       opacity: 0.4;
       border: 2px dashed #007bff;
     }
@@ -109,7 +152,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
     }
 
     .card-label-area {
@@ -118,15 +160,14 @@
       gap: 6px;
     }
 
-    /* ドラッグハンドル（掴みしろアイコン） */
-    .drag-handle {
+    .drag-handle-item {
       cursor: grab;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #aaa;
       padding: 0 2px;
       user-select: none;
     }
-    .drag-handle:active {
+    .drag-handle-item:active {
       cursor: grabbing;
       color: #555;
     }
@@ -137,7 +178,7 @@
       color: #555;
     }
 
-    /* コピー完了メッセージ（枠付きバッジ風） */
+    /* コピー完了メッセージ */
     .copy-feedback {
       font-size: 0.6rem;
       font-weight: bold;
@@ -183,7 +224,7 @@
     .copy-btn {
       width: 100%;
       text-align: left;
-      background: #ffffff;
+      background: #fdfdfd;
       border: 1px solid #ccc;
       border-radius: 6px;
       padding: 8px 10px;
@@ -243,10 +284,10 @@
       transition: transform 0.25s ease;
     }
 
-    /* メモ用モーダルは少し広めに調整 */
+    /* 会社名・アドレス管理用モーダル */
     .memo-modal-content {
-      width: 420px;
-      height: 380px;
+      width: 480px;
+      max-height: 85vh;
     }
 
     .modal-overlay.show .modal-content {
@@ -284,12 +325,41 @@
       height: 80px;
     }
 
-    /* メモ用テキストエリア */
-    .memo-textarea-modal {
+    .form-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      background: #f9f9f9;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #eee;
+    }
+
+    .company-list-container {
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .company-item-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 6px;
+      border-radius: 4px;
+    }
+
+    .company-item-row input {
       flex: 1;
-      resize: none;
-      height: auto;
-      line-height: 1.5;
+      padding: 4px 6px;
+      font-size: 0.85rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
 
     .modal-footer {
@@ -315,6 +385,30 @@
       font-weight: bold;
     }
     .btn-submit:hover { background: #0056b3; }
+
+    .btn-add-sub {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .btn-add-sub:hover { background: #218838; }
+
+    .btn-del-sub {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .btn-del-sub:hover { background: #c82333; }
   </style>
 </head>
 <body>
@@ -324,29 +418,13 @@
     <div class="panel-header">
       <span class="panel-title">コピーリスト</span>
       <div class="header-actions">
-        <button class="action-main-btn memo-open-btn" id="openMemoModal">📝 メモ</button>
+        <button class="action-main-btn memo-open-btn" id="openMemoModal">🏢 会社・メアド管理</button>
         <button class="action-main-btn" id="openModal">追加</button>
       </div>
     </div>
     
     <div class="card-list" id="cardList">
-      <!-- サンプルアイテム1 -->
-      <div class="item-card" draggable="true" data-text="お世話になっております。よろしくお願いいたします。">
-        <div class="card-header">
-          <div class="card-label-area">
-            <span class="drag-handle" title="ドラッグして移動">☰</span>
-            <span class="card-label">メールテンプレート</span>
-            <span class="copy-feedback">コピーしました！</span>
-          </div>
-          <div class="card-actions">
-            <button class="action-btn edit-btn" onclick="openEditModal(this)">編集</button>
-            <button class="action-btn delete-btn" onclick="deleteCard(this)">削除</button>
-          </div>
-        </div>
-        <button class="copy-btn" onclick="copyText(this)">
-          お世話になっております...
-        </button>
-      </div>
+      <!-- JavaScriptで動的にグループごとに生成されます -->
     </div>
   </aside>
 
@@ -356,8 +434,14 @@
       <div class="modal-title" id="modalTitle">新しい項目を追加</div>
       
       <div class="form-group">
-        <label class="form-label">ラベル（分類名など）</label>
-        <input type="text" id="inputLabel" class="form-input" placeholder="例: 住所、定型文など">
+        <label class="form-label">グループ名</label>
+        <input type="text" id="inputGroup" class="form-input" placeholder="例: よく使う文面、アドレスなど" list="groupSuggestions">
+        <datalist id="groupSuggestions"></datalist>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ラベル（項目のタイトル）</label>
+        <input type="text" id="inputLabel" class="form-input" placeholder="例: 挨拶、返信など">
       </div>
 
       <div class="form-group">
@@ -372,60 +456,278 @@
     </div>
   </div>
 
-  <!-- メモ用ポップアップモーダル -->
+  <!-- 複数会社名・メールアドレス登録用モーダル -->
   <div class="modal-overlay" id="memoModalOverlay">
     <div class="modal-content memo-modal-content">
-      <div class="modal-title">自由メモ・下書きスペース</div>
+      <div class="modal-title">会社名・メールアドレスの管理</div>
       
-      <div class="form-group" style="flex: 1;">
-        <textarea id="memoTextarea" class="form-textarea memo-textarea-modal" placeholder="ここに自由にテキストを入力したり、一時置き場として使えます..."></textarea>
+      <div class="form-group">
+        <label class="form-label">新しいセットを追加</label>
+        <div class="form-row">
+          <input type="text" id="newCompanyName" class="form-input" placeholder="会社名">
+          <input type="email" id="newEmailAddress" class="form-input" placeholder="メールアドレス">
+          <button class="btn-add-sub" id="addCompanyBtn">追加</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">登録済み一覧（自動保存）</label>
+        <div class="company-list-container" id="companyListContainer">
+          <!-- 動的に追加されます -->
+        </div>
       </div>
 
       <div class="modal-footer">
-        <span class="memo-status" id="memoStatus">自動保存されます</span>
+        <span class="memo-status" id="memoStatus">変更は自動保存されます</span>
         <button class="btn-submit" id="closeMemoBtn">閉じる</button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- 項目追加・編集モーダル関連 ---
+    const COPY_ITEMS_KEY = 'one_click_copy_items_v8';
+    const COMPANIES_STORAGE_KEY = 'one_click_copy_companies_list';
+
+    let copyItems = [
+      {
+        id: '1',
+        group: 'メールテンプレート',
+        label: 'お礼と挨拶',
+        text: 'お世話になっております。よろしくお願いいたします。'
+      }
+    ];
+
+    let companiesList = [
+      { id: 'c1', company: '株式会社〇〇', email: 'info@example.com' }
+    ];
+
+    function loadItems() {
+      const saved = localStorage.getItem(COPY_ITEMS_KEY);
+      if (saved) {
+        try { copyItems = JSON.parse(saved); } catch (e) { console.error(e); }
+      }
+      const savedCompanies = localStorage.getItem(COMPANIES_STORAGE_KEY);
+      if (savedCompanies) {
+        try { companiesList = JSON.parse(savedCompanies); } catch (e) { console.error(e); }
+      }
+    }
+
+    function saveItems() {
+      localStorage.setItem(COPY_ITEMS_KEY, JSON.stringify(copyItems));
+    }
+
+    function saveCompanies() {
+      localStorage.setItem(COMPANIES_STORAGE_KEY, JSON.stringify(companiesList));
+    }
+
     const openModalBtn = document.getElementById('openModal');
     const modalOverlay = document.getElementById('modalOverlay');
     const saveBtn = document.getElementById('saveBtn');
     const modalTitle = document.getElementById('modalTitle');
+    const inputGroup = document.getElementById('inputGroup');
     const inputLabel = document.getElementById('inputLabel');
     const inputText = document.getElementById('inputText');
     const cardList = document.getElementById('cardList');
+    const groupSuggestions = document.getElementById('groupSuggestions');
 
-    let editingCard = null;
+    let editingId = null;
+
+    function renderCards() {
+      cardList.innerHTML = '';
+
+      const groupNames = [...new Set(copyItems.map(item => item.group || '未分類'))];
+
+      groupNames.forEach(groupName => {
+        const items = copyItems.filter(item => (item.group || '未分類') === groupName);
+        if (items.length === 0) return;
+
+        const groupCard = document.createElement('div');
+        groupCard.className = 'group-card';
+        groupCard.setAttribute('draggable', 'true');
+        groupCard.setAttribute('data-group', groupName);
+
+        const header = document.createElement('div');
+        header.className = 'group-header';
+        header.innerHTML = `<span>📂 ${escapeHTML(groupName)}</span><span>(${items.length})</span>`;
+        groupCard.appendChild(header);
+
+        const itemsContainer = document.createElement('div');
+        itemsContainer.className = 'group-items-container';
+
+        items.forEach(item => {
+          const previewText = item.text.length > 20 ? item.text.substring(0, 20) + '...' : item.text;
+          const itemBlock = document.createElement('div');
+          itemBlock.className = 'item-block';
+          itemBlock.setAttribute('draggable', 'true');
+          itemBlock.setAttribute('data-id', item.id);
+          itemBlock.setAttribute('data-text', item.text);
+
+          itemBlock.innerHTML = `
+            <div class="card-header">
+              <div class="card-label-area">
+                <span class="drag-handle-item" title="ドラッグして移動">☰</span>
+                <span class="card-label">${escapeHTML(item.label)}</span>
+                <span class="copy-feedback">コピーしました！</span>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn edit-btn" onclick="openEditModal('${item.id}')">編集</button>
+                <button class="action-btn delete-btn" onclick="deleteCard('${item.id}')">削除</button>
+              </div>
+            </div>
+            <button class="copy-btn" onclick="copyText(this)">
+              ${escapeHTML(previewText)}
+            </button>
+          `;
+          itemsContainer.appendChild(itemBlock);
+        });
+
+        groupCard.appendChild(itemsContainer);
+        cardList.appendChild(groupCard);
+      });
+
+      updateGroupSuggestions();
+      initDragAndDrop();
+    }
+
+    function initDragAndDrop() {
+      const groupCards = cardList.querySelectorAll('.group-card');
+      groupCards.forEach(groupCard => {
+        groupCard.addEventListener('dragstart', (e) => {
+          if (e.target !== groupCard && !e.target.classList.contains('group-header')) return;
+          e.stopPropagation();
+          groupCard.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', 'group:' + groupCard.getAttribute('data-group'));
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        groupCard.addEventListener('dragend', (e) => {
+          e.stopPropagation();
+          groupCard.classList.remove('dragging');
+          groupCards.forEach(c => c.classList.remove('drag-over'));
+        });
+
+        groupCard.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          const draggingGroup = cardList.querySelector('.group-card.dragging');
+          if (!draggingGroup || draggingGroup === groupCard) return;
+
+          const rect = groupCard.getBoundingClientRect();
+          const midpoint = rect.top + rect.height / 2;
+
+          if (e.clientY < midpoint) {
+            cardList.insertBefore(draggingGroup, groupCard);
+          } else {
+            cardList.insertBefore(draggingGroup, groupCard.nextElementSibling);
+          }
+        });
+
+        groupCard.addEventListener('drop', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          updateItemsOrderFromDOM();
+        });
+      });
+
+      const itemBlocks = cardList.querySelectorAll('.item-block');
+      itemBlocks.forEach(itemBlock => {
+        itemBlock.addEventListener('dragstart', (e) => {
+          e.stopPropagation();
+          itemBlock.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', 'item:' + itemBlock.getAttribute('data-id'));
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        itemBlock.addEventListener('dragend', (e) => {
+          e.stopPropagation();
+          itemBlock.classList.remove('dragging');
+          itemBlocks.forEach(c => c.classList.remove('drag-over'));
+        });
+
+        itemBlock.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const draggingItem = cardList.querySelector('.item-block.dragging');
+          if (!draggingItem || draggingItem === itemBlock) return;
+
+          const targetContainer = itemBlock.closest('.group-items-container');
+          const rect = itemBlock.getBoundingClientRect();
+          const midpoint = rect.top + rect.height / 2;
+
+          if (e.clientY < midpoint) {
+            targetContainer.insertBefore(draggingItem, itemBlock);
+          } else {
+            targetContainer.insertBefore(draggingItem, itemBlock.nextElementSibling);
+          }
+        });
+
+        itemBlock.addEventListener('drop', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          updateItemsOrderFromDOM();
+        });
+      });
+    }
+
+    function updateItemsOrderFromDOM() {
+      const newCopyItems = [];
+      const groupCards = cardList.querySelectorAll('.group-card');
+
+      groupCards.forEach(groupCard => {
+        const groupName = groupCard.getAttribute('data-group');
+        const itemBlocks = groupCard.querySelectorAll('.item-block');
+
+        itemBlocks.forEach(block => {
+          const id = block.getAttribute('data-id');
+          const item = copyItems.find(i => i.id === id);
+          if (item) {
+            item.group = groupName;
+            newCopyItems.push(item);
+          }
+        });
+      });
+
+      copyItems = newCopyItems;
+      saveItems();
+    }
+
+    function updateGroupSuggestions() {
+      const groups = [...new Set(copyItems.map(item => item.group))];
+      groupSuggestions.innerHTML = '';
+      groups.forEach(g => {
+        const option = document.createElement('option');
+        option.value = g;
+        groupSuggestions.appendChild(option);
+      });
+    }
 
     openModalBtn.addEventListener('click', () => {
-      editingCard = null;
+      editingId = null;
       modalTitle.textContent = '新しい項目を追加';
       saveBtn.textContent = '追加する';
+      inputGroup.value = '';
       inputLabel.value = '';
       inputText.value = '';
       modalOverlay.classList.add('show');
-      inputLabel.focus();
+      inputGroup.focus();
     });
 
-    function openEditModal(button) {
-      editingCard = button.closest('.item-card');
-      const labelText = editingCard.querySelector('.card-label').textContent;
-      const fullText = editingCard.getAttribute('data-text');
+    function openEditModal(id) {
+      const item = copyItems.find(i => i.id === id);
+      if (!item) return;
 
+      editingId = id;
       modalTitle.textContent = '項目を編集';
       saveBtn.textContent = '更新する';
-      inputLabel.value = labelText;
-      inputText.value = fullText;
+      inputGroup.value = item.group || '';
+      inputLabel.value = item.label || '';
+      inputText.value = item.text || '';
       modalOverlay.classList.add('show');
-      inputLabel.focus();
+      inputGroup.focus();
     }
 
     const closeModal = () => {
       modalOverlay.classList.remove('show');
-      editingCard = null;
+      editingId = null;
     };
 
     modalOverlay.addEventListener('click', (e) => {
@@ -433,6 +735,7 @@
     });
 
     function handleSave() {
+      const group = inputGroup.value.trim() || '未分類';
       const label = inputLabel.value.trim();
       const text = inputText.value.trim();
 
@@ -441,39 +744,25 @@
         return;
       }
 
-      const previewText = text.length > 20 ? text.substring(0, 20) + '...' : text;
-
-      if (editingCard) {
-        editingCard.setAttribute('data-text', text);
-        editingCard.querySelector('.card-label').textContent = label;
-        editingCard.querySelector('.copy-btn').textContent = previewText;
+      if (editingId) {
+        const item = copyItems.find(i => i.id === editingId);
+        if (item) {
+          item.group = group;
+          item.label = label;
+          item.text = text;
+        }
       } else {
-        const newCard = document.createElement('div');
-        newCard.className = 'item-card';
-        newCard.setAttribute('draggable', 'true');
-        newCard.setAttribute('data-text', text);
-        
-        newCard.innerHTML = `
-          <div class="card-header">
-            <div class="card-label-area">
-              <span class="drag-handle" title="ドラッグして移動">☰</span>
-              <span class="card-label">${escapeHTML(label)}</span>
-              <span class="copy-feedback">コピーしました！</span>
-            </div>
-            <div class="card-actions">
-              <button class="action-btn edit-btn" onclick="openEditModal(this)">編集</button>
-              <button class="action-btn delete-btn" onclick="deleteCard(this)">削除</button>
-            </div>
-          </div>
-          <button class="copy-btn" onclick="copyText(this)">
-            ${escapeHTML(previewText)}
-          </button>
-        `;
-        
-        addDragAndDropEvents(newCard);
-        cardList.prepend(newCard);
+        const newItem = {
+          id: Date.now().toString(),
+          group,
+          label,
+          text
+        };
+        copyItems.push(newItem);
       }
 
+      saveItems();
+      renderCards();
       closeModal();
     }
 
@@ -486,98 +775,22 @@
       }
     }
 
+    inputGroup.addEventListener('keydown', handleShortcut);
     inputLabel.addEventListener('keydown', handleShortcut);
     inputText.addEventListener('keydown', handleShortcut);
 
-
-    // --- メモモーダル & 自動保存（LocalStorage）関連 ---
-    const openMemoModalBtn = document.getElementById('openMemoModal');
-    const memoModalOverlay = document.getElementById('memoModalOverlay');
-    const closeMemoBtn = document.getElementById('closeMemoBtn');
-    const memoTextarea = document.getElementById('memoTextarea');
-    const memoStatus = document.getElementById('memoStatus');
-    const MEMO_STORAGE_KEY = 'one_click_copy_memo_content';
-
-    // 読み込み時に復元
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedMemo = localStorage.getItem(MEMO_STORAGE_KEY);
-      if (savedMemo !== null) {
-        memoTextarea.value = savedMemo;
+    function deleteCard(id) {
+      if (confirm('この項目を削除してもよろしいですか？')) {
+        copyItems = copyItems.filter(i => i.id !== id);
+        saveItems();
+        renderCards();
       }
-    });
-
-    openMemoModalBtn.addEventListener('click', () => {
-      memoModalOverlay.classList.add('show');
-      memoTextarea.focus();
-    });
-
-    const closeMemoModal = () => {
-      memoModalOverlay.classList.remove('show');
-    };
-
-    closeMemoBtn.addEventListener('click', closeMemoModal);
-    memoModalOverlay.addEventListener('click', (e) => {
-      if (e.target === memoModalOverlay) closeMemoModal();
-    });
-
-    // 自動保存処理
-    let saveTimeout = null;
-    memoTextarea.addEventListener('input', () => {
-      memoStatus.textContent = '保存中...';
-      
-      clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(() => {
-        localStorage.setItem(MEMO_STORAGE_KEY, memoTextarea.value);
-        memoStatus.textContent = '保存済み';
-        setTimeout(() => {
-          memoStatus.textContent = '自動保存されます';
-        }, 1500);
-      }, 500);
-    });
-
-
-    // --- 共通機能（削除・ドラッグ＆ドロップ・コピー） ---
-    function deleteCard(button) {
-      const card = button.closest('.item-card');
-      card.remove();
     }
-
-    function addDragAndDropEvents(card) {
-      card.addEventListener('dragstart', (e) => {
-        card.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      });
-
-      card.addEventListener('dragend', () => {
-        card.classList.remove('dragging');
-        document.querySelectorAll('.item-card').forEach(c => c.classList.remove('drag-over'));
-      });
-
-      card.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        const draggingCard = document.querySelector('.dragging');
-        if (!draggingCard || draggingCard === card) return;
-
-        const rect = card.getBoundingClientRect();
-        const midpoint = rect.top + rect.height / 2;
-        
-        if (e.clientY < midpoint) {
-          cardList.insertBefore(draggingCard, card);
-        } else {
-          cardList.insertBefore(draggingCard, card.nextElementSibling);
-        }
-      });
-    }
-
-    document.querySelectorAll('.item-card').forEach(card => {
-      addDragAndDropEvents(card);
-    });
 
     function copyText(button) {
-      const card = button.closest('.item-card');
-      const text = card.getAttribute('data-text');
-      const feedback = card.querySelector('.copy-feedback');
+      const itemBlock = button.closest('.item-block');
+      const text = itemBlock.getAttribute('data-text');
+      const feedback = itemBlock.querySelector('.copy-feedback');
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
@@ -626,6 +839,80 @@
       return str.replace(/[&<>'"]/g, 
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
       );
+    }
+
+    // --- 複数会社名・メールアドレス管理モーダル関連 ---
+    const openMemoModalBtn = document.getElementById('openMemoModal');
+    const memoModalOverlay = document.getElementById('memoModalOverlay');
+    const closeMemoBtn = document.getElementById('closeMemoBtn');
+    const companyListContainer = document.getElementById('companyListContainer');
+    const newCompanyName = document.getElementById('newCompanyName');
+    const newEmailAddress = document.getElementById('newEmailAddress');
+    const addCompanyBtn = document.getElementById('addCompanyBtn');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadItems();
+      renderCards();
+      renderCompaniesList();
+    });
+
+    openMemoModalBtn.addEventListener('click', () => {
+      memoModalOverlay.classList.add('show');
+    });
+
+    const closeMemoModal = () => {
+      memoModalOverlay.classList.remove('show');
+    };
+
+    closeMemoBtn.addEventListener('click', closeMemoModal);
+    memoModalOverlay.addEventListener('click', (e) => {
+      if (e.target === memoModalOverlay) closeMemoModal();
+    });
+
+    function renderCompaniesList() {
+      companyListContainer.innerHTML = '';
+      companiesList.forEach((comp) => {
+        const row = document.createElement('div');
+        row.className = 'company-item-row';
+        row.innerHTML = `
+          <input type="text" value="${escapeHTML(comp.company)}" placeholder="会社名" oninput="updateCompanyField('${comp.id}', 'company', this.value)">
+          <input type="email" value="${escapeHTML(comp.email)}" placeholder="メールアドレス" oninput="updateCompanyField('${comp.id}', 'email', this.value)">
+          <button class="btn-del-sub" onclick="deleteCompany('${comp.id}')">削除</button>
+        `;
+        companyListContainer.appendChild(row);
+      });
+    }
+
+    addCompanyBtn.addEventListener('click', () => {
+      const compVal = newCompanyName.value.trim();
+      const emailVal = newEmailAddress.value.trim();
+
+      if (!compVal && !emailVal) return;
+
+      companiesList.push({
+        id: Date.now().toString(),
+        company: compVal,
+        email: emailVal
+      });
+
+      newCompanyName.value = '';
+      newEmailAddress.value = '';
+      saveCompanies();
+      renderCompaniesList();
+    });
+
+    function updateCompanyField(id, field, value) {
+      const target = companiesList.find(c => c.id === id);
+      if (target) {
+        target[field] = value;
+        saveCompanies();
+      }
+    }
+
+    function deleteCompany(id) {
+      companiesList = companiesList.filter(c => c.id !== id);
+      saveCompanies();
+      renderCompaniesList();
     }
   </script>
 
