@@ -235,6 +235,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .copy-btn:hover {
@@ -247,6 +250,8 @@
       content: "📋";
       font-size: 0.75rem;
       opacity: 0.5;
+      flex-shrink: 0;
+      margin-left: 6px;
     }
 
     /* ポップアップ（モーダル）共通の背景 */
@@ -271,11 +276,26 @@
       pointer-events: auto;
     }
 
-    /* すべてのモーダルで幅を320pxに統一 */
-    .modal-content, .memo-modal-content {
+    .modal-content {
       background: #ffffff;
       width: 320px;
       max-height: 85vh;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transform: translateY(-20px);
+      transition: transform 0.25s ease;
+    }
+
+    /* 会社管理モーダル専用の高さを90vhに変更 */
+    .memo-modal-content {
+      background: #ffffff;
+      width: 340px;
+      height: 90vh;
+      max-height: 90vh;
       border-radius: 8px;
       padding: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -301,6 +321,11 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+    }
+
+    .form-group.flex-grow {
+      flex: 1;
+      min-height: 0;
     }
 
     .form-label {
@@ -332,14 +357,21 @@
       border: 1px solid #eee;
     }
 
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .company-list-container {
-      max-height: 200px;
+      flex: 1;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 8px;
       margin-top: 4px;
       padding-right: 2px;
+      min-height: 0;
     }
 
     .company-item-row {
@@ -352,18 +384,35 @@
       border-radius: 6px;
     }
 
-    .company-item-inputs {
+    .company-item-header {
       display: flex;
-      gap: 4px;
+      justify-content: space-between;
       align-items: center;
     }
 
-    .company-item-inputs input {
-      flex: 1;
+    .company-name-text {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .company-item-row input[type="email"] {
+      width: 100%;
       padding: 4px 6px;
       font-size: 0.85rem;
       border: 1px solid #ccc;
       border-radius: 4px;
+      background-color: #f8f9fa;
+    }
+
+    .company-item-row input[type="email"]:not(:read-only) {
+      background-color: #fff;
+      border-color: #007bff;
+    }
+
+    .company-actions {
+      display: flex;
+      gap: 4px;
     }
 
     .modal-footer {
@@ -394,14 +443,36 @@
       background: #28a745;
       color: white;
       border: none;
-      padding: 6px 12px;
+      padding: 4px 10px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: bold;
-      align-self: flex-end;
+      white-space: nowrap;
     }
     .btn-add-sub:hover { background: #218838; }
+
+    .btn-register-sub {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      padding: 3px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+    .btn-register-sub:hover { background: #138496; }
+
+    .btn-edit-sub {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 3px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+    .btn-edit-sub:hover { background: #0056b3; }
 
     .btn-del-sub {
       background: #dc3545;
@@ -422,7 +493,7 @@
     <div class="panel-header">
       <span class="panel-title">コピーリスト</span>
       <div class="header-actions">
-        <button class="action-main-btn memo-open-btn" id="openMemoModal">🏢 会社・メアド管理</button>
+        <button class="action-main-btn memo-open-btn" id="openMemoModal">🏢 メアド管理</button>
         <button class="action-main-btn" id="openModal">追加</button>
       </div>
     </div>
@@ -460,22 +531,24 @@
     </div>
   </div>
 
-  <!-- 複数会社名・メールアドレス登録用モーダル（幅320pxに統一・縦並び） -->
+  <!-- 複数会社名・メールアドレス登録用モーダル -->
   <div class="modal-overlay" id="memoModalOverlay">
     <div class="modal-content memo-modal-content">
       <div class="modal-title">会社名・メールアドレスの管理</div>
       
       <div class="form-group">
-        <label class="form-label">新しいセットを追加</label>
-        <div class="form-add-box">
+        <div class="section-header-row">
+          <label class="form-label" style="margin-bottom: 0;">新しいセットを追加</label>
+          <button class="btn-add-sub" id="addCompanyBtn">追加する</button>
+        </div>
+        <div class="form-add-box" style="margin-top: 4px;">
           <input type="text" id="newCompanyName" class="form-input" placeholder="会社名">
           <input type="email" id="newEmailAddress" class="form-input" placeholder="メールアドレス">
-          <button class="btn-add-sub" id="addCompanyBtn">追加する</button>
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">登録済み一覧（自動保存）</label>
+      <div class="form-group flex-grow">
+        <label class="form-label">登録済み一覧</label>
         <div class="company-list-container" id="companyListContainer">
           <!-- 動的に追加されます -->
         </div>
@@ -489,7 +562,7 @@
   </div>
 
   <script>
-    const COPY_ITEMS_KEY = 'one_click_copy_items_v8';
+    const COPY_ITEMS_KEY = 'one_click_copy_items_v14';
     const COMPANIES_STORAGE_KEY = 'one_click_copy_companies_list';
 
     let copyItems = [
@@ -559,7 +632,6 @@
         itemsContainer.className = 'group-items-container';
 
         items.forEach(item => {
-          const previewText = item.text.length > 20 ? item.text.substring(0, 20) + '...' : item.text;
           const itemBlock = document.createElement('div');
           itemBlock.className = 'item-block';
           itemBlock.setAttribute('draggable', 'true');
@@ -578,8 +650,8 @@
                 <button class="action-btn delete-btn" onclick="deleteCard('${item.id}')">削除</button>
               </div>
             </div>
-            <button class="copy-btn" onclick="copyText(this)">
-              ${escapeHTML(previewText)}
+            <button class="copy-btn" title="${escapeHTML(item.text)}" onclick="copyText(this)">
+              ${escapeHTML(item.text)}
             </button>
           `;
           itemsContainer.appendChild(itemBlock);
@@ -873,17 +945,32 @@
       if (e.target === memoModalOverlay) closeMemoModal();
     });
 
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (modalOverlay.classList.contains('show')) {
+          closeModal();
+        }
+        if (memoModalOverlay.classList.contains('show')) {
+          closeMemoModal();
+        }
+      }
+    });
+
     function renderCompaniesList() {
       companyListContainer.innerHTML = '';
       companiesList.forEach((comp) => {
         const row = document.createElement('div');
         row.className = 'company-item-row';
         row.innerHTML = `
-          <div class="company-item-inputs">
-            <input type="text" value="${escapeHTML(comp.company)}" placeholder="会社名" oninput="updateCompanyField('${comp.id}', 'company', this.value)">
-            <button class="btn-del-sub" onclick="deleteCompany('${comp.id}')">削除</button>
+          <div class="company-item-header">
+            <span class="company-name-text">${escapeHTML(comp.company || '(会社名なし)')}</span>
+            <div class="company-actions">
+              <button class="btn-register-sub" onclick="registerEmailToCopyList('${comp.id}')">コピペ</button>
+              <button class="btn-edit-sub" id="edit-btn-${comp.id}" onclick="toggleEditEmail('${comp.id}')">編集</button>
+              <button class="btn-del-sub" onclick="deleteCompany('${comp.id}')">削除</button>
+            </div>
           </div>
-          <input type="email" value="${escapeHTML(comp.email)}" placeholder="メールアドレス" oninput="updateCompanyField('${comp.id}', 'email', this.value)">
+          <input type="email" id="comp-email-${comp.id}" value="${escapeHTML(comp.email)}" placeholder="メールアドレス" readonly>
         `;
         companyListContainer.appendChild(row);
       });
@@ -907,18 +994,55 @@
       renderCompaniesList();
     });
 
-    function updateCompanyField(id, field, value) {
-      const target = companiesList.find(c => c.id === id);
-      if (target) {
-        target[field] = value;
-        saveCompanies();
+    function registerEmailToCopyList(id) {
+      const comp = companiesList.find(c => c.id === id);
+      if (!comp || !comp.email) {
+        alert('登録されているメールアドレスがありません。');
+        return;
+      }
+
+      const newItem = {
+        id: Date.now().toString(),
+        group: 'メールアドレス',
+        label: 'メールアドレス',
+        text: comp.email
+      };
+
+      // データの配列の先頭（一番上）に追加
+      copyItems.unshift(newItem);
+
+      saveItems();
+      renderCards();
+    }
+
+    function toggleEditEmail(id) {
+      const emailInput = document.getElementById(`comp-email-${id}`);
+      const editBtn = document.getElementById(`edit-btn-${id}`);
+
+      if (emailInput.hasAttribute('readonly')) {
+        emailInput.removeAttribute('readonly');
+        editBtn.textContent = '保存';
+        editBtn.style.backgroundColor = '#28a745';
+        emailInput.focus();
+      } else {
+        emailInput.setAttribute('readonly', 'true');
+        editBtn.textContent = '編集';
+        editBtn.style.backgroundColor = '#007bff';
+
+        const target = companiesList.find(c => c.id === id);
+        if (target) {
+          target.email = emailInput.value.trim();
+          saveCompanies();
+        }
       }
     }
 
     function deleteCompany(id) {
-      companiesList = companiesList.filter(c => c.id !== id);
-      saveCompanies();
-      renderCompaniesList();
+      if (confirm('この会社情報・メールアドレスを削除してもよろしいですか？')) {
+        companiesList = companiesList.filter(c => c.id !== id);
+        saveCompanies();
+        renderCompaniesList();
+      }
     }
   </script>
 
