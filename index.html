@@ -57,8 +57,8 @@
       align-items: center;
     }
 
-    /* モーダルを開くボタン */
-    .open-modal-btn {
+    /* ボタン共通 */
+    .action-main-btn {
       background-color: #007bff;
       color: white;
       border: none;
@@ -70,8 +70,15 @@
       white-space: nowrap;
     }
 
-    .open-modal-btn:hover {
+    .action-main-btn:hover {
       background-color: #0056b3;
+    }
+
+    .memo-open-btn {
+      background-color: #6c757d;
+    }
+    .memo-open-btn:hover {
+      background-color: #5a6268;
     }
 
     /* リスト構造（スクロール可能） */
@@ -201,7 +208,7 @@
       opacity: 0.5;
     }
 
-    /* ポップアップ（モーダル）の背景 */
+    /* ポップアップ（モーダル）共通の背景 */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -234,6 +241,12 @@
       gap: 12px;
       transform: translateY(-20px);
       transition: transform 0.25s ease;
+    }
+
+    /* メモ用モーダルは少し広めに調整 */
+    .memo-modal-content {
+      width: 420px;
+      height: 380px;
     }
 
     .modal-overlay.show .modal-content {
@@ -271,6 +284,14 @@
       height: 80px;
     }
 
+    /* メモ用テキストエリア */
+    .memo-textarea-modal {
+      flex: 1;
+      resize: none;
+      height: auto;
+      line-height: 1.5;
+    }
+
     .modal-footer {
       display: flex;
       justify-content: space-between;
@@ -278,7 +299,7 @@
       margin-top: 4px;
     }
 
-    .shortcut-hint {
+    .shortcut-hint, .memo-status {
       font-size: 0.7rem;
       color: #888;
     }
@@ -303,7 +324,8 @@
     <div class="panel-header">
       <span class="panel-title">コピーリスト</span>
       <div class="header-actions">
-        <button class="open-modal-btn" id="openModal">追加</button>
+        <button class="action-main-btn memo-open-btn" id="openMemoModal">📝 メモ</button>
+        <button class="action-main-btn" id="openModal">追加</button>
       </div>
     </div>
     
@@ -328,7 +350,7 @@
     </div>
   </aside>
 
-  <!-- 追加・編集用モーダル -->
+  <!-- 項目追加・編集用モーダル -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
       <div class="modal-title" id="modalTitle">新しい項目を追加</div>
@@ -350,7 +372,24 @@
     </div>
   </div>
 
+  <!-- メモ用ポップアップモーダル -->
+  <div class="modal-overlay" id="memoModalOverlay">
+    <div class="modal-content memo-modal-content">
+      <div class="modal-title">自由メモ・下書きスペース</div>
+      
+      <div class="form-group" style="flex: 1;">
+        <textarea id="memoTextarea" class="form-textarea memo-textarea-modal" placeholder="ここに自由にテキストを入力したり、一時置き場として使えます..."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <span class="memo-status" id="memoStatus">自動保存されます</span>
+        <button class="btn-submit" id="closeMemoBtn">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // --- 項目追加・編集モーダル関連 ---
     const openModalBtn = document.getElementById('openModal');
     const modalOverlay = document.getElementById('modalOverlay');
     const saveBtn = document.getElementById('saveBtn');
@@ -450,6 +489,54 @@
     inputLabel.addEventListener('keydown', handleShortcut);
     inputText.addEventListener('keydown', handleShortcut);
 
+
+    // --- メモモーダル & 自動保存（LocalStorage）関連 ---
+    const openMemoModalBtn = document.getElementById('openMemoModal');
+    const memoModalOverlay = document.getElementById('memoModalOverlay');
+    const closeMemoBtn = document.getElementById('closeMemoBtn');
+    const memoTextarea = document.getElementById('memoTextarea');
+    const memoStatus = document.getElementById('memoStatus');
+    const MEMO_STORAGE_KEY = 'one_click_copy_memo_content';
+
+    // 読み込み時に復元
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedMemo = localStorage.getItem(MEMO_STORAGE_KEY);
+      if (savedMemo !== null) {
+        memoTextarea.value = savedMemo;
+      }
+    });
+
+    openMemoModalBtn.addEventListener('click', () => {
+      memoModalOverlay.classList.add('show');
+      memoTextarea.focus();
+    });
+
+    const closeMemoModal = () => {
+      memoModalOverlay.classList.remove('show');
+    };
+
+    closeMemoBtn.addEventListener('click', closeMemoModal);
+    memoModalOverlay.addEventListener('click', (e) => {
+      if (e.target === memoModalOverlay) closeMemoModal();
+    });
+
+    // 自動保存処理
+    let saveTimeout = null;
+    memoTextarea.addEventListener('input', () => {
+      memoStatus.textContent = '保存中...';
+      
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        localStorage.setItem(MEMO_STORAGE_KEY, memoTextarea.value);
+        memoStatus.textContent = '保存済み';
+        setTimeout(() => {
+          memoStatus.textContent = '自動保存されます';
+        }, 1500);
+      }, 500);
+    });
+
+
+    // --- 共通機能（削除・ドラッグ＆ドロップ・コピー） ---
     function deleteCard(button) {
       const card = button.closest('.item-card');
       card.remove();
