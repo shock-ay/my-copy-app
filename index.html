@@ -460,8 +460,13 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.7rem;
+      transition: background-color 0.2s, transform 0.1s;
     }
     .btn-register-sub:hover { background: #138496; }
+    .btn-register-sub.success {
+      background-color: #28a745 !important;
+      transform: scale(1.05);
+    }
 
     .btn-edit-sub {
       background: #007bff;
@@ -965,7 +970,7 @@
           <div class="company-item-header">
             <span class="company-name-text">${escapeHTML(comp.company || '(会社名なし)')}</span>
             <div class="company-actions">
-              <button class="btn-register-sub" onclick="registerEmailToCopyList('${comp.id}')">コピペ</button>
+              <button class="btn-register-sub" id="copy-sub-btn-${comp.id}" onclick="registerEmailToCopyList('${comp.id}', this)">コピペ</button>
               <button class="btn-edit-sub" id="edit-btn-${comp.id}" onclick="toggleEditEmail('${comp.id}')">編集</button>
               <button class="btn-del-sub" onclick="deleteCompany('${comp.id}')">削除</button>
             </div>
@@ -994,25 +999,57 @@
       renderCompaniesList();
     });
 
-    function registerEmailToCopyList(id) {
+    function registerEmailToCopyList(id, button) {
       const comp = companiesList.find(c => c.id === id);
       if (!comp || !comp.email) {
         alert('登録されているメールアドレスがありません。');
         return;
       }
 
+      const targetGroup = 'メールアドレス';
+      const targetLabel = 'メールアドレス';
+
       const newItem = {
         id: Date.now().toString(),
-        group: 'メールアドレス',
-        label: 'メールアドレス',
+        group: targetGroup,
+        label: targetLabel,
         text: comp.email
       };
 
-      // データの配列の先頭（一番上）に追加
-      copyItems.unshift(newItem);
+      // --- グループ内では一番上、ラベルの階層内では2つ目以降が下に順番に並ぶように挿入する処理 ---
+      const groupItems = copyItems.filter(item => (item.group || '未分類') === targetGroup);
+      const labelItems = groupItems.filter(item => item.label === targetLabel);
+
+      if (groupItems.length === 0) {
+        // グループ自体が存在しない場合は先頭に追加
+        copyItems.unshift(newItem);
+      } else if (labelItems.length === 0) {
+        // 同じグループはあるが、同名ラベルがまだない場合は、そのグループの先頭に挿入
+        const firstGroupIndex = copyItems.findIndex(item => (item.group || '未分類') === targetGroup);
+        copyItems.splice(firstGroupIndex, 0, newItem);
+      } else {
+        // すでに同名ラベルの項目が存在する場合は、そのラベルの最後の項目のすぐ後ろ（下）に挿入
+        const lastSameLabelItem = labelItems[labelItems.length - 1];
+        const insertIndex = copyItems.findIndex(item => item.id === lastSameLabelItem.id) + 1;
+        copyItems.splice(insertIndex, 0, newItem);
+      }
 
       saveItems();
       renderCards();
+
+      // --- ボタンの表示切り替えアニメーション処理 ---
+      if (button.dataset.isAnimating === 'true') return;
+      button.dataset.isAnimating = 'true';
+
+      const originalText = button.textContent;
+      button.textContent = '成功！';
+      button.classList.add('success');
+
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('success');
+        button.dataset.isAnimating = 'false';
+      }, 1500);
     }
 
     function toggleEditEmail(id) {
