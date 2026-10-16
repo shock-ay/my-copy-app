@@ -271,9 +271,11 @@
       pointer-events: auto;
     }
 
-    .modal-content {
+    /* すべてのモーダルで幅を320pxに統一 */
+    .modal-content, .memo-modal-content {
       background: #ffffff;
       width: 320px;
+      max-height: 85vh;
       border-radius: 8px;
       padding: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -284,13 +286,8 @@
       transition: transform 0.25s ease;
     }
 
-    /* 会社名・アドレス管理用モーダル */
-    .memo-modal-content {
-      width: 480px;
-      max-height: 85vh;
-    }
-
-    .modal-overlay.show .modal-content {
+    .modal-overlay.show .modal-content,
+    .modal-overlay.show .memo-modal-content {
       transform: translateY(0);
     }
 
@@ -325,10 +322,10 @@
       height: 80px;
     }
 
-    .form-row {
+    .form-add-box {
       display: flex;
-      gap: 8px;
-      align-items: flex-end;
+      flex-direction: column;
+      gap: 6px;
       background: #f9f9f9;
       padding: 8px;
       border-radius: 6px;
@@ -342,19 +339,26 @@
       flex-direction: column;
       gap: 8px;
       margin-top: 4px;
+      padding-right: 2px;
     }
 
     .company-item-row {
       display: flex;
-      gap: 8px;
-      align-items: center;
+      flex-direction: column;
+      gap: 4px;
       background: #fff;
       border: 1px solid #ddd;
-      padding: 6px;
-      border-radius: 4px;
+      padding: 8px;
+      border-radius: 6px;
     }
 
-    .company-item-row input {
+    .company-item-inputs {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .company-item-inputs input {
       flex: 1;
       padding: 4px 6px;
       font-size: 0.85rem;
@@ -390,12 +394,12 @@
       background: #28a745;
       color: white;
       border: none;
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.8rem;
       font-weight: bold;
-      white-space: nowrap;
+      align-self: flex-end;
     }
     .btn-add-sub:hover { background: #218838; }
 
@@ -403,10 +407,10 @@
       background: #dc3545;
       color: white;
       border: none;
-      padding: 4px 8px;
+      padding: 3px 6px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
     }
     .btn-del-sub:hover { background: #c82333; }
   </style>
@@ -456,17 +460,17 @@
     </div>
   </div>
 
-  <!-- 複数会社名・メールアドレス登録用モーダル -->
+  <!-- 複数会社名・メールアドレス登録用モーダル（幅320pxに統一・縦並び） -->
   <div class="modal-overlay" id="memoModalOverlay">
     <div class="modal-content memo-modal-content">
       <div class="modal-title">会社名・メールアドレスの管理</div>
       
       <div class="form-group">
         <label class="form-label">新しいセットを追加</label>
-        <div class="form-row">
+        <div class="form-add-box">
           <input type="text" id="newCompanyName" class="form-input" placeholder="会社名">
           <input type="email" id="newEmailAddress" class="form-input" placeholder="メールアドレス">
-          <button class="btn-add-sub" id="addCompanyBtn">追加</button>
+          <button class="btn-add-sub" id="addCompanyBtn">追加する</button>
         </div>
       </div>
 
@@ -478,7 +482,7 @@
       </div>
 
       <div class="modal-footer">
-        <span class="memo-status" id="memoStatus">変更は自動保存されます</span>
+        <span class="memo-status" id="memoStatus">自動保存されます</span>
         <button class="btn-submit" id="closeMemoBtn">閉じる</button>
       </div>
     </div>
@@ -875,9 +879,11 @@
         const row = document.createElement('div');
         row.className = 'company-item-row';
         row.innerHTML = `
-          <input type="text" value="${escapeHTML(comp.company)}" placeholder="会社名" oninput="updateCompanyField('${comp.id}', 'company', this.value)">
+          <div class="company-item-inputs">
+            <input type="text" value="${escapeHTML(comp.company)}" placeholder="会社名" oninput="updateCompanyField('${comp.id}', 'company', this.value)">
+            <button class="btn-del-sub" onclick="deleteCompany('${comp.id}')">削除</button>
+          </div>
           <input type="email" value="${escapeHTML(comp.email)}" placeholder="メールアドレス" oninput="updateCompanyField('${comp.id}', 'email', this.value)">
-          <button class="btn-del-sub" onclick="deleteCompany('${comp.id}')">削除</button>
         `;
         companyListContainer.appendChild(row);
       });
