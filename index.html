@@ -9,27 +9,27 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     }
 
     body {
       display: flex;
-      background-color: #f4f6f9;
-      color: #333;
+      background-color: #f0f2f5;
+      color: #2c3e50;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* サイドパネル */
+    /* サイドパネル全体 */
     .side-panel {
-      width: 380px;
+      width: 410px;
       background-color: #ffffff;
-      border-right: 1px solid #e0e0e0;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-      padding: 20px 16px;
+      border-right: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.04);
+      padding: 18px 14px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       height: 100vh;
       position: sticky;
       top: 0;
@@ -40,48 +40,137 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid #007bff;
-      padding-bottom: 8px;
+      border-bottom: 2px solid #eef2f7;
+      padding-bottom: 12px;
     }
 
     .panel-title {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #444;
-      white-space: nowrap;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1e293b;
+      letter-spacing: -0.3px;
     }
 
     .header-actions {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
     }
 
-    /* ボタン共通 */
+    /* メインボタン（メアド管理・追加）のデザイン強化 */
     .action-main-btn {
-      background-color: #007bff;
-      color: white;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
       border: none;
-      border-radius: 4px;
-      padding: 6px 10px;
+      border-radius: 6px;
+      padding: 7px 12px;
       font-size: 0.8rem;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .action-main-btn:hover {
-      background-color: #0056b3;
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .action-main-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
     }
 
     .memo-open-btn {
-      background-color: #6c757d;
-    }
-    .memo-open-btn:hover {
-      background-color: #5a6268;
+      background: linear-gradient(135deg, #475569, #334155);
+      box-shadow: 0 2px 4px rgba(71, 85, 105, 0.2);
     }
 
-    /* リスト構造（スクロール可能） */
+    .memo-open-btn:hover {
+      background: linear-gradient(135deg, #334155, #1e293b);
+      box-shadow: 0 4px 8px rgba(71, 85, 105, 0.3);
+    }
+
+    /* メインコンテンツエリア */
+    .panel-body {
+      display: flex;
+      flex: 1;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    /* 頭文字インデックスバー */
+    .index-bar {
+      width: 40px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      gap: 5px;
+      overflow-y: auto;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .index-bar::-webkit-scrollbar {
+      width: 3px;
+    }
+    .index-bar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+
+    .index-item {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #475569;
+      padding: 4px 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .index-item:hover {
+      background-color: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .index-item.active {
+      background-color: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+    }
+
+    .index-item.all-item {
+      color: #64748b;
+      font-size: 0.7rem;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 4px;
+      padding-bottom: 6px;
+      border-radius: 6px 6px 0 0;
+      width: 100%;
+    }
+
+    .index-item.all-item.active {
+      background-color: #475569;
+      color: #ffffff;
+      border-bottom-color: transparent;
+    }
+
+    /* リスト構造 */
     .card-list {
       flex: 1;
       overflow-y: auto;
@@ -89,35 +178,40 @@
       flex-direction: column;
       gap: 14px;
       padding-right: 4px;
+      scroll-behavior: smooth;
     }
 
     /* グループごとにまとめるコンテナカード */
     .group-card {
-      background: #fafafa;
-      border: 1px solid #e5e5e5;
-      border-radius: 8px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
       padding: 12px;
-      display: flex;
+      display: none;
       flex-direction: column;
-      gap: 12px;
-      cursor: default;
-      transition: opacity 0.2s, border-color 0.2s;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .group-card.show {
+      display: flex;
     }
 
     .group-card.dragging {
       opacity: 0.4;
-      border: 2px dashed #007bff;
+      border: 2px dashed #2563eb;
     }
 
     .group-header {
       font-size: 0.85rem;
-      font-weight: bold;
-      color: #333;
+      font-weight: 700;
+      color: #334155;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #e5e5e5;
-      padding-bottom: 6px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 8px;
       cursor: grab;
       user-select: none;
     }
@@ -125,27 +219,31 @@
       cursor: grabbing;
     }
 
-    /* グループ内の各項目 */
     .group-items-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .item-block {
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       padding: 8px 10px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      transition: opacity 0.2s, border-color 0.2s;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+
+    .item-block:hover {
+      border-color: #cbd5e1;
+      background: #ffffff;
     }
 
     .item-block.dragging {
       opacity: 0.4;
-      border: 2px dashed #007bff;
+      border: 2px dashed #2563eb;
     }
 
     .card-header {
@@ -163,29 +261,28 @@
     .drag-handle-item {
       cursor: grab;
       font-size: 0.8rem;
-      color: #aaa;
+      color: #94a3b8;
       padding: 0 2px;
       user-select: none;
     }
     .drag-handle-item:active {
       cursor: grabbing;
-      color: #555;
+      color: #475569;
     }
 
     .card-label {
       font-size: 0.75rem;
-      font-weight: bold;
-      color: #555;
+      font-weight: 700;
+      color: #475569;
     }
 
-    /* コピー完了メッセージ */
     .copy-feedback {
-      font-size: 0.6rem;
-      font-weight: bold;
-      color: #28a745;
-      background-color: #e8f5e9;
-      border: 1px solid #c8e6c9;
-      padding: 1px 5px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #16a34a;
+      background-color: #dcfce7;
+      border: 1px solid #bbf7d0;
+      padding: 1px 6px;
       border-radius: 4px;
       opacity: 0;
       transition: opacity 0.2s ease;
@@ -202,35 +299,36 @@
     .action-btn {
       background: none;
       border: none;
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       cursor: pointer;
-      padding: 2px 5px;
+      padding: 3px 6px;
       border-radius: 4px;
-      font-weight: bold;
+      font-weight: 600;
+      transition: background-color 0.15s, color 0.15s;
     }
 
     .edit-btn {
-      color: #007bff;
-      background: #e9f3ff;
+      color: #2563eb;
+      background: #eff6ff;
     }
-    .edit-btn:hover { background: #d0e5ff; }
+    .edit-btn:hover { background: #dbeafe; }
 
     .delete-btn {
-      color: #dc3545;
-      background: #f8d7da;
+      color: #dc2626;
+      background: #fef2f2;
     }
-    .delete-btn:hover { background: #f5c6cb; }
+    .delete-btn:hover { background: #fee2e2; }
 
     .copy-btn {
       width: 100%;
       text-align: left;
-      background: #fdfdfd;
-      border: 1px solid #ccc;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
       border-radius: 6px;
       padding: 8px 10px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      color: #2c3e50;
+      color: #1e293b;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
@@ -238,30 +336,32 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      transition: all 0.15s ease;
     }
 
     .copy-btn:hover {
-      background-color: #e9f3ff;
-      border-color: #007bff;
-      color: #007bff;
+      background-color: #eff6ff;
+      border-color: #3b82f6;
+      color: #2563eb;
     }
 
     .copy-btn::after {
       content: "📋";
       font-size: 0.75rem;
-      opacity: 0.5;
+      opacity: 0.6;
       flex-shrink: 0;
       margin-left: 6px;
     }
 
-    /* ポップアップ（モーダル）共通の背景 */
+    /* ポップアップ（モーダル）共通背景 */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(2px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -278,31 +378,31 @@
 
     .modal-content {
       background: #ffffff;
-      width: 320px;
+      width: 340px;
       max-height: 85vh;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      transform: translateY(-20px);
+      gap: 14px;
+      transform: translateY(-10px);
       transition: transform 0.25s ease;
+      overflow-y: auto;
     }
 
-    /* 会社管理モーダル専用の高さを90vhに変更 */
     .memo-modal-content {
       background: #ffffff;
-      width: 340px;
-      height: 90vh;
-      max-height: 90vh;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      width: 360px;
+      height: 88vh;
+      max-height: 88vh;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      transform: translateY(-20px);
+      gap: 14px;
+      transform: translateY(-10px);
       transition: transform 0.25s ease;
     }
 
@@ -312,15 +412,15 @@
     }
 
     .modal-title {
-      font-size: 1rem;
-      font-weight: bold;
-      color: #333;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .form-group.flex-grow {
@@ -330,16 +430,23 @@
 
     .form-label {
       font-size: 0.8rem;
-      font-weight: bold;
-      color: #555;
+      font-weight: 700;
+      color: #475569;
     }
 
     .form-input, .form-textarea {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 0.9rem;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
 
     .form-textarea {
@@ -347,19 +454,18 @@
       height: 80px;
     }
 
-    /* 新規セット追加の折りたたみ部分 */
     .form-add-box {
-      display: none; /* 初期状態は非表示 */
+      display: none;
       flex-direction: column;
-      gap: 6px;
-      background: #f9f9f9;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #eee;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
       margin-top: 4px;
     }
     .form-add-box.show {
-      display: flex; /* 開いたときに入力欄を表示 */
+      display: flex;
     }
 
     .section-header-row {
@@ -382,11 +488,11 @@
     .company-item-row {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 8px;
-      border-radius: 6px;
+      gap: 6px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+      border-radius: 8px;
     }
 
     .company-item-header {
@@ -397,22 +503,22 @@
 
     .company-name-text {
       font-size: 0.85rem;
-      font-weight: bold;
-      color: #333;
+      font-weight: 700;
+      color: #1e293b;
     }
 
     .company-item-row input[type="email"] {
       width: 100%;
-      padding: 4px 6px;
-      font-size: 0.85rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: #f8f9fa;
+      padding: 5px 8px;
+      font-size: 0.8rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background-color: #f8fafc;
     }
 
     .company-item-row input[type="email"]:not(:read-only) {
-      background-color: #fff;
-      border-color: #007bff;
+      background-color: #ffffff;
+      border-color: #2563eb;
     }
 
     .company-actions {
@@ -424,90 +530,100 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
     .shortcut-hint, .memo-status {
       font-size: 0.7rem;
-      color: #888;
+      color: #94a3b8;
     }
 
     .btn-submit {
-      background: #007bff;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: white;
       border: none;
-      padding: 6px 16px;
-      border-radius: 4px;
+      padding: 7px 16px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 0.85rem;
-      font-weight: bold;
+      font-weight: 700;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      transition: all 0.15s ease;
     }
-    .btn-submit:hover { background: #0056b3; }
+    .btn-submit:hover {
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25);
+    }
 
     .btn-add-toggle {
-      background: #6c757d;
+      background: #64748b;
       color: white;
       border: none;
       padding: 4px 10px;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 0.75rem;
-      font-weight: bold;
+      font-weight: 700;
       white-space: nowrap;
+      transition: background-color 0.15s;
     }
-    .btn-add-toggle:hover { background: #5a6268; }
+    .btn-add-toggle:hover { background: #475569; }
 
     .btn-add-sub {
-      background: #28a745;
+      background: #16a34a;
       color: white;
       border: none;
-      padding: 4px 10px;
-      border-radius: 4px;
+      padding: 5px 12px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 0.75rem;
-      font-weight: bold;
+      font-weight: 700;
       white-space: nowrap;
       align-self: flex-end;
+      transition: background-color 0.15s;
     }
-    .btn-add-sub:hover { background: #218838; }
+    .btn-add-sub:hover { background: #15803d; }
 
     .btn-register-sub {
-      background: #17a2b8;
+      background: #0284c7;
       color: white;
       border: none;
-      padding: 3px 6px;
+      padding: 3px 8px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.7rem;
-      transition: background-color 0.2s, transform 0.1s;
+      font-weight: 600;
+      transition: all 0.15s ease;
     }
-    .btn-register-sub:hover { background: #138496; }
+    .btn-register-sub:hover { background: #0369a1; }
     .btn-register-sub.success {
-      background-color: #28a745 !important;
+      background-color: #16a34a !important;
       transform: scale(1.05);
     }
 
     .btn-edit-sub {
-      background: #007bff;
+      background: #2563eb;
       color: white;
       border: none;
-      padding: 3px 6px;
+      padding: 3px 8px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.7rem;
+      font-weight: 600;
     }
-    .btn-edit-sub:hover { background: #0056b3; }
+    .btn-edit-sub:hover { background: #1d4ed8; }
 
     .btn-del-sub {
-      background: #dc3545;
+      background: #dc2626;
       color: white;
       border: none;
-      padding: 3px 6px;
+      padding: 3px 8px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.7rem;
+      font-weight: 600;
     }
-    .btn-del-sub:hover { background: #c82333; }
+    .btn-del-sub:hover { background: #b91c1c; }
   </style>
 </head>
 <body>
@@ -518,12 +634,16 @@
       <span class="panel-title">コピーリスト</span>
       <div class="header-actions">
         <button class="action-main-btn memo-open-btn" id="openMemoModal">🏢 メアド管理</button>
-        <button class="action-main-btn" id="openModal">追加</button>
+        <button class="action-main-btn" id="openModal">＋ 追加</button>
       </div>
     </div>
     
-    <div class="card-list" id="cardList">
-      <!-- JavaScriptで動的にグループごとに生成されます -->
+    <div class="panel-body">
+      <!-- インデックスバー -->
+      <div class="index-bar" id="indexBar" title="頭文字で絞り込み"></div>
+
+      <!-- カードリスト -->
+      <div class="card-list" id="cardList"></div>
     </div>
   </aside>
 
@@ -534,8 +654,13 @@
       
       <div class="form-group">
         <label class="form-label">グループ名</label>
-        <input type="text" id="inputGroup" class="form-input" placeholder="例: よく使う文面、アドレスなど" list="groupSuggestions">
+        <input type="text" id="inputGroup" class="form-input" placeholder="例: メールテンプレート、アドレスなど" list="groupSuggestions">
         <datalist id="groupSuggestions"></datalist>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">グループ名のフリガナ（ひらがな/カタカナ）</label>
+        <input type="text" id="inputGroupFurigana" class="form-input" placeholder="例: めーるてんぷれーと">
       </div>
 
       <div class="form-group">
@@ -563,10 +688,8 @@
       <div class="form-group">
         <div class="section-header-row">
           <label class="form-label" style="margin-bottom: 0;">新しいセットを追加</label>
-          <!-- ▼ 開閉用トグルボタンに変更 -->
           <button class="btn-add-toggle" id="toggleAddBoxBtn">＋ 新規追加</button>
         </div>
-        <!-- ▼ 通常時はたたまれている入力ボックス -->
         <div class="form-add-box" id="formAddBox">
           <input type="text" id="newCompanyName" class="form-input" placeholder="会社名">
           <input type="email" id="newEmailAddress" class="form-input" placeholder="メールアドレス">
@@ -576,9 +699,7 @@
 
       <div class="form-group flex-grow">
         <label class="form-label">登録済み一覧</label>
-        <div class="company-list-container" id="companyListContainer">
-          <!-- 動的に追加されます -->
-        </div>
+        <div class="company-list-container" id="companyListContainer"></div>
       </div>
 
       <div class="modal-footer">
@@ -589,13 +710,14 @@
   </div>
 
   <script>
-    const COPY_ITEMS_KEY = 'one_click_copy_items_v14';
+    const COPY_ITEMS_KEY = 'one_click_copy_items_v15';
     const COMPANIES_STORAGE_KEY = 'one_click_copy_companies_list';
 
     let copyItems = [
       {
         id: '1',
         group: 'メールテンプレート',
+        groupFurigana: 'めーるてんぷれーと',
         label: 'お礼と挨拶',
         text: 'お世話になっております。よろしくお願いいたします。'
       }
@@ -604,6 +726,9 @@
     let companiesList = [
       { id: 'c1', company: '株式会社〇〇', email: 'info@example.com' }
     ];
+
+    let editingId = null;
+    let selectedInitialChar = null;
 
     function loadItems() {
       const saved = localStorage.getItem(COPY_ITEMS_KEY);
@@ -624,31 +749,66 @@
       localStorage.setItem(COMPANIES_STORAGE_KEY, JSON.stringify(companiesList));
     }
 
-    const openModalBtn = document.getElementById('openModal');
-    const modalOverlay = document.getElementById('modalOverlay');
-    const saveBtn = document.getElementById('saveBtn');
-    const modalTitle = document.getElementById('modalTitle');
-    const inputGroup = document.getElementById('inputGroup');
-    const inputLabel = document.getElementById('inputLabel');
-    const inputText = document.getElementById('inputText');
-    const cardList = document.getElementById('cardList');
-    const groupSuggestions = document.getElementById('groupSuggestions');
+    function katakanaToHiragana(src) {
+      return src.replace(/[\u30a1-\u30f6]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60));
+    }
 
-    let editingId = null;
+    function removeKanji(str) {
+      if (!str) return '';
+      return str.replace(/[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/g, '');
+    }
+
+    function getExactInitialChar(furiganaOrGroup) {
+      if (!furiganaOrGroup) return '#';
+      const cleanStr = removeKanji(furiganaOrGroup);
+      const hira = katakanaToHiragana((cleanStr || furiganaOrGroup).trim());
+      const ch = hira.charAt(0);
+
+      if (/[a-zA-Z]/.test(ch)) return ch.toUpperCase();
+      return ch || '#';
+    }
 
     function renderCards() {
+      const cardList = document.getElementById('cardList');
+      const indexBar = document.getElementById('indexBar');
+      if (!cardList || !indexBar) return;
+
       cardList.innerHTML = '';
+      indexBar.innerHTML = '';
 
-      const groupNames = [...new Set(copyItems.map(item => item.group || '未分類'))];
+      const groupMap = new Map();
+      copyItems.forEach(item => {
+        const gName = item.group || '未分類';
+        const gFuri = item.groupFurigana || gName;
+        if (!groupMap.has(gName)) {
+          groupMap.set(gName, gFuri);
+        }
+      });
 
-      groupNames.forEach(groupName => {
+      const sortedGroups = Array.from(groupMap.entries()).sort((a, b) => {
+        const furiA = katakanaToHiragana(removeKanji(a[1]) || a[0]);
+        const furiB = katakanaToHiragana(removeKanji(b[1]) || b[0]);
+        return furiA.localeCompare(furiB, 'ja');
+      });
+
+      const indexItemsMap = [];
+
+      sortedGroups.forEach(([groupName, groupFurigana]) => {
         const items = copyItems.filter(item => (item.group || '未分類') === groupName);
         if (items.length === 0) return;
+
+        const initialChar = getExactInitialChar(groupFurigana);
 
         const groupCard = document.createElement('div');
         groupCard.className = 'group-card';
         groupCard.setAttribute('draggable', 'true');
         groupCard.setAttribute('data-group', groupName);
+        groupCard.setAttribute('data-initial', initialChar);
+        groupCard.id = `group-${encodeURIComponent(groupName)}`;
+
+        if (selectedInitialChar === 'ALL' || (selectedInitialChar && selectedInitialChar === initialChar)) {
+          groupCard.classList.add('show');
+        }
 
         const header = document.createElement('div');
         header.className = 'group-header';
@@ -686,6 +846,47 @@
 
         groupCard.appendChild(itemsContainer);
         cardList.appendChild(groupCard);
+
+        if (!indexItemsMap.some(idx => idx.char === initialChar)) {
+          indexItemsMap.push({ char: initialChar, targetId: `group-${encodeURIComponent(groupName)}` });
+        }
+      });
+
+      const allItemEl = document.createElement('div');
+      allItemEl.className = `index-item all-item ${selectedInitialChar === 'ALL' ? 'active' : ''}`;
+      allItemEl.textContent = '全';
+      allItemEl.title = 'すべてのグループを表示';
+      allItemEl.addEventListener('click', () => {
+        selectedInitialChar = (selectedInitialChar === 'ALL') ? null : 'ALL';
+        renderCards();
+      });
+      indexBar.appendChild(allItemEl);
+
+      indexItemsMap.forEach(indexItem => {
+        const itemEl = document.createElement('div');
+        itemEl.className = `index-item ${selectedInitialChar === indexItem.char ? 'active' : ''}`;
+        itemEl.textContent = indexItem.char;
+        itemEl.title = `「${indexItem.char}」で絞り込み表示`;
+        
+        itemEl.addEventListener('click', () => {
+          if (selectedInitialChar === indexItem.char) {
+            selectedInitialChar = null;
+          } else {
+            selectedInitialChar = indexItem.char;
+          }
+          renderCards();
+
+          if (selectedInitialChar) {
+            const target = document.getElementById(indexItem.targetId);
+            if (target) {
+              cardList.scrollTo({
+                top: target.offsetTop - cardList.offsetTop,
+                behavior: 'smooth'
+              });
+            }
+          }
+        });
+        indexBar.appendChild(itemEl);
       });
 
       updateGroupSuggestions();
@@ -693,7 +894,9 @@
     }
 
     function initDragAndDrop() {
+      const cardList = document.getElementById('cardList');
       const groupCards = cardList.querySelectorAll('.group-card');
+
       groupCards.forEach(groupCard => {
         groupCard.addEventListener('dragstart', (e) => {
           if (e.target !== groupCard && !e.target.classList.contains('group-header')) return;
@@ -706,7 +909,6 @@
         groupCard.addEventListener('dragend', (e) => {
           e.stopPropagation();
           groupCard.classList.remove('dragging');
-          groupCards.forEach(c => c.classList.remove('drag-over'));
         });
 
         groupCard.addEventListener('dragover', (e) => {
@@ -743,7 +945,6 @@
         itemBlock.addEventListener('dragend', (e) => {
           e.stopPropagation();
           itemBlock.classList.remove('dragging');
-          itemBlocks.forEach(c => c.classList.remove('drag-over'));
         });
 
         itemBlock.addEventListener('dragover', (e) => {
@@ -772,6 +973,7 @@
     }
 
     function updateItemsOrderFromDOM() {
+      const cardList = document.getElementById('cardList');
       const newCopyItems = [];
       const groupCards = cardList.querySelectorAll('.group-card');
 
@@ -791,9 +993,12 @@
 
       copyItems = newCopyItems;
       saveItems();
+      renderCards();
     }
 
     function updateGroupSuggestions() {
+      const groupSuggestions = document.getElementById('groupSuggestions');
+      if (!groupSuggestions) return;
       const groups = [...new Set(copyItems.map(item => item.group))];
       groupSuggestions.innerHTML = '';
       groups.forEach(g => {
@@ -803,42 +1008,34 @@
       });
     }
 
-    openModalBtn.addEventListener('click', () => {
-      editingId = null;
-      modalTitle.textContent = '新しい項目を追加';
-      saveBtn.textContent = '追加する';
-      inputGroup.value = '';
-      inputLabel.value = '';
-      inputText.value = '';
-      modalOverlay.classList.add('show');
-      inputGroup.focus();
-    });
-
     function openEditModal(id) {
       const item = copyItems.find(i => i.id === id);
       if (!item) return;
 
       editingId = id;
-      modalTitle.textContent = '項目を編集';
-      saveBtn.textContent = '更新する';
-      inputGroup.value = item.group || '';
-      inputLabel.value = item.label || '';
-      inputText.value = item.text || '';
-      modalOverlay.classList.add('show');
-      inputGroup.focus();
+      document.getElementById('modalTitle').textContent = '項目を編集';
+      document.getElementById('saveBtn').textContent = '更新する';
+      document.getElementById('inputGroup').value = item.group || '';
+      document.getElementById('inputGroupFurigana').value = item.groupFurigana || removeKanji(item.group) || '';
+      document.getElementById('inputLabel').value = item.label || '';
+      document.getElementById('inputText').value = item.text || '';
+      document.getElementById('modalOverlay').classList.add('show');
+      document.getElementById('inputGroup').focus();
     }
 
-    const closeModal = () => {
-      modalOverlay.classList.remove('show');
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('show');
       editingId = null;
-    };
-
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) closeModal();
-    });
+    }
 
     function handleSave() {
+      const inputGroup = document.getElementById('inputGroup');
+      const inputGroupFurigana = document.getElementById('inputGroupFurigana');
+      const inputLabel = document.getElementById('inputLabel');
+      const inputText = document.getElementById('inputText');
+
       const group = inputGroup.value.trim() || '未分類';
+      const groupFurigana = removeKanji(inputGroupFurigana.value.trim()) || inputGroupFurigana.value.trim() || group;
       const label = inputLabel.value.trim();
       const text = inputText.value.trim();
 
@@ -847,40 +1044,36 @@
         return;
       }
 
+      copyItems.forEach(i => {
+        if ((i.group || '未分類') === group) {
+          i.groupFurigana = groupFurigana;
+        }
+      });
+
       if (editingId) {
         const item = copyItems.find(i => i.id === editingId);
         if (item) {
           item.group = group;
+          item.groupFurigana = groupFurigana;
           item.label = label;
           item.text = text;
         }
       } else {
-        const newItem = {
+        copyItems.push({
           id: Date.now().toString(),
           group,
+          groupFurigana,
           label,
           text
-        };
-        copyItems.push(newItem);
+        });
       }
+
+      selectedInitialChar = getExactInitialChar(groupFurigana);
 
       saveItems();
       renderCards();
       closeModal();
     }
-
-    saveBtn.addEventListener('click', handleSave);
-
-    function handleShortcut(e) {
-      if (e.ctrlKey && e.key === 'Enter') {
-        e.preventDefault();
-        handleSave();
-      }
-    }
-
-    inputGroup.addEventListener('keydown', handleShortcut);
-    inputLabel.addEventListener('keydown', handleShortcut);
-    inputText.addEventListener('keydown', handleShortcut);
 
     function deleteCard(id) {
       if (confirm('この項目を削除してもよろしいですか？')) {
@@ -910,16 +1103,13 @@
       const textArea = document.createElement("textarea");
       textArea.value = text;
       textArea.style.position = "fixed";
-      textArea.style.top = "0";
-      textArea.style.left = "0";
       textArea.style.opacity = "0";
       document.body.appendChild(textArea);
       textArea.focus();
       textArea.select();
 
       try {
-        const successful = document.execCommand('copy');
-        if (successful) {
+        if (document.execCommand('copy')) {
           showFeedback(feedback);
         } else {
           alert('コピーに失敗しました。');
@@ -944,62 +1134,10 @@
       );
     }
 
-    // --- 複数会社名・メールアドレス管理モーダル関連 ---
-    const openMemoModalBtn = document.getElementById('openMemoModal');
-    const memoModalOverlay = document.getElementById('memoModalOverlay');
-    const closeMemoBtn = document.getElementById('closeMemoBtn');
-    const companyListContainer = document.getElementById('companyListContainer');
-    const newCompanyName = document.getElementById('newCompanyName');
-    const newEmailAddress = document.getElementById('newEmailAddress');
-    const addCompanyBtn = document.getElementById('addCompanyBtn');
-    const toggleAddBoxBtn = document.getElementById('toggleAddBoxBtn');
-    const formAddBox = document.getElementById('formAddBox');
-
-    window.addEventListener('DOMContentLoaded', () => {
-      loadItems();
-      renderCards();
-      renderCompaniesList();
-    });
-
-    openMemoModalBtn.addEventListener('click', () => {
-      memoModalOverlay.classList.add('show');
-    });
-
-    const closeMemoModal = () => {
-      memoModalOverlay.classList.remove('show');
-      // モーダルを閉じるときに入力欄も折りたたみに戻す
-      formAddBox.classList.remove('show');
-      toggleAddBoxBtn.textContent = '＋ 新規追加';
-    };
-
-    closeMemoBtn.addEventListener('click', closeMemoModal);
-    memoModalOverlay.addEventListener('click', (e) => {
-      if (e.target === memoModalOverlay) closeMemoModal();
-    });
-
-    // ▼ 「新規追加」トグルボタンのクリック処理
-    toggleAddBoxBtn.addEventListener('click', () => {
-      formAddBox.classList.toggle('show');
-      if (formAddBox.classList.contains('show')) {
-        toggleAddBoxBtn.textContent = '閉じる';
-        newCompanyName.focus();
-      } else {
-        toggleAddBoxBtn.textContent = '＋ 新規追加';
-      }
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (modalOverlay.classList.contains('show')) {
-          closeModal();
-        }
-        if (memoModalOverlay.classList.contains('show')) {
-          closeMemoModal();
-        }
-      }
-    });
-
     function renderCompaniesList() {
+      const companyListContainer = document.getElementById('companyListContainer');
+      if (!companyListContainer) return;
+
       companyListContainer.innerHTML = '';
       companiesList.forEach((comp) => {
         const row = document.createElement('div');
@@ -1019,27 +1157,15 @@
       });
     }
 
-    addCompanyBtn.addEventListener('click', () => {
-      const compVal = newCompanyName.value.trim();
-      const emailVal = newEmailAddress.value.trim();
+    function closeMemoModal() {
+      const memoModalOverlay = document.getElementById('memoModalOverlay');
+      const formAddBox = document.getElementById('formAddBox');
+      const toggleAddBoxBtn = document.getElementById('toggleAddBoxBtn');
 
-      if (!compVal && !emailVal) return;
-
-      companiesList.push({
-        id: Date.now().toString(),
-        company: compVal,
-        email: emailVal
-      });
-
-      newCompanyName.value = '';
-      newEmailAddress.value = '';
-      saveCompanies();
-      renderCompaniesList();
-
-      // 登録したら入力欄を自動でたたむ
+      memoModalOverlay.classList.remove('show');
       formAddBox.classList.remove('show');
       toggleAddBoxBtn.textContent = '＋ 新規追加';
-    });
+    }
 
     function registerEmailToCopyList(id, button) {
       const comp = companiesList.find(c => c.id === id);
@@ -1049,11 +1175,13 @@
       }
 
       const targetGroup = 'メールアドレス';
+      const targetGroupFurigana = 'めーるあどれす';
       const targetLabel = 'メールアドレス';
 
       const newItem = {
         id: Date.now().toString(),
         group: targetGroup,
+        groupFurigana: targetGroupFurigana,
         label: targetLabel,
         text: comp.email
       };
@@ -1072,10 +1200,11 @@
         copyItems.splice(insertIndex, 0, newItem);
       }
 
+      selectedInitialChar = getExactInitialChar(targetGroupFurigana);
+
       saveItems();
       renderCards();
 
-      // ボタンの表示切り替えアニメーション処理
       if (button.dataset.isAnimating === 'true') return;
       button.dataset.isAnimating = 'true';
 
@@ -1097,12 +1226,12 @@
       if (emailInput.hasAttribute('readonly')) {
         emailInput.removeAttribute('readonly');
         editBtn.textContent = '保存';
-        editBtn.style.backgroundColor = '#28a745';
+        editBtn.style.backgroundColor = '#16a34a';
         emailInput.focus();
       } else {
         emailInput.setAttribute('readonly', 'true');
         editBtn.textContent = '編集';
-        editBtn.style.backgroundColor = '#007bff';
+        editBtn.style.backgroundColor = '#2563eb';
 
         const target = companiesList.find(c => c.id === id);
         if (target) {
@@ -1119,7 +1248,163 @@
         renderCompaniesList();
       }
     }
-  </script>
 
+    // 初期化 & イベントリスナー設定
+    document.addEventListener('DOMContentLoaded', () => {
+      loadItems();
+      renderCards();
+      renderCompaniesList();
+
+      const openModalBtn = document.getElementById('openModal');
+      const openMemoModalBtn = document.getElementById('openMemoModal');
+      const modalOverlay = document.getElementById('modalOverlay');
+      const memoModalOverlay = document.getElementById('memoModalOverlay');
+      const saveBtn = document.getElementById('saveBtn');
+      const closeMemoBtn = document.getElementById('closeMemoBtn');
+      const toggleAddBoxBtn = document.getElementById('toggleAddBoxBtn');
+      const addCompanyBtn = document.getElementById('addCompanyBtn');
+      const formAddBox = document.getElementById('formAddBox');
+
+      const inputGroup = document.getElementById('inputGroup');
+      const inputGroupFurigana = document.getElementById('inputGroupFurigana');
+
+      let readingBuffer = '';
+
+      inputGroup.addEventListener('compositionupdate', (e) => {
+        if (e.data) {
+          const pureHira = removeKanji(e.data);
+          if (pureHira) {
+            readingBuffer = pureHira;
+            inputGroupFurigana.value = readingBuffer;
+          }
+        }
+      });
+
+      inputGroup.addEventListener('compositionend', () => {
+        const val = inputGroup.value.trim();
+        const existing = copyItems.find(i => i.group === val);
+
+        if (existing && existing.groupFurigana) {
+          inputGroupFurigana.value = existing.groupFurigana;
+        } else if (readingBuffer) {
+          inputGroupFurigana.value = readingBuffer;
+        } else {
+          inputGroupFurigana.value = removeKanji(inputGroupFurigana.value);
+        }
+      });
+
+      inputGroupFurigana.addEventListener('input', () => {
+        const cleaned = removeKanji(inputGroupFurigana.value);
+        if (inputGroupFurigana.value !== cleaned) {
+          inputGroupFurigana.value = cleaned;
+        }
+      });
+
+      inputGroup.addEventListener('input', (e) => {
+        if (!e.isComposing) {
+          const val = inputGroup.value.trim();
+          if (val === '') {
+            readingBuffer = '';
+            inputGroupFurigana.value = '';
+          } else {
+            const existing = copyItems.find(i => i.group === val);
+            if (existing && existing.groupFurigana) {
+              inputGroupFurigana.value = existing.groupFurigana;
+            } else {
+              const cleanVal = removeKanji(val);
+              if (cleanVal && !inputGroupFurigana.value) {
+                inputGroupFurigana.value = cleanVal;
+              }
+            }
+          }
+        }
+      });
+
+      if (openModalBtn) {
+        openModalBtn.addEventListener('click', () => {
+          editingId = null;
+          document.getElementById('modalTitle').textContent = '新しい項目を追加';
+          saveBtn.textContent = '追加する';
+          inputGroup.value = '';
+          inputGroupFurigana.value = '';
+          readingBuffer = '';
+          document.getElementById('inputLabel').value = '';
+          document.getElementById('inputText').value = '';
+          modalOverlay.classList.add('show');
+          inputGroup.focus();
+        });
+      }
+
+      if (openMemoModalBtn) {
+        openMemoModalBtn.addEventListener('click', () => {
+          memoModalOverlay.classList.add('show');
+        });
+      }
+
+      saveBtn.addEventListener('click', handleSave);
+      closeMemoBtn.addEventListener('click', closeMemoModal);
+
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+
+      memoModalOverlay.addEventListener('click', (e) => {
+        if (e.target === memoModalOverlay) closeMemoModal();
+      });
+
+      toggleAddBoxBtn.addEventListener('click', () => {
+        formAddBox.classList.toggle('show');
+        if (formAddBox.classList.contains('show')) {
+          toggleAddBoxBtn.textContent = '閉じる';
+          document.getElementById('newCompanyName').focus();
+        } else {
+          toggleAddBoxBtn.textContent = '＋ 新規追加';
+        }
+      });
+
+      addCompanyBtn.addEventListener('click', () => {
+        const newCompanyName = document.getElementById('newCompanyName');
+        const newEmailAddress = document.getElementById('newEmailAddress');
+
+        const compVal = newCompanyName.value.trim();
+        const emailVal = newEmailAddress.value.trim();
+
+        if (!compVal && !emailVal) return;
+
+        companiesList.push({
+          id: Date.now().toString(),
+          company: compVal,
+          email: emailVal
+        });
+
+        newCompanyName.value = '';
+        newEmailAddress.value = '';
+        saveCompanies();
+        renderCompaniesList();
+
+        formAddBox.classList.remove('show');
+        toggleAddBoxBtn.textContent = '＋ 新規追加';
+      });
+
+      const handleShortcut = (e) => {
+        if (e.ctrlKey && e.key === 'Enter') {
+          e.preventDefault();
+          handleSave();
+        }
+      };
+
+      inputGroup.addEventListener('keydown', handleShortcut);
+      inputGroupFurigana.addEventListener('keydown', handleShortcut);
+      document.getElementById('inputLabel').addEventListener('keydown', handleShortcut);
+      document.getElementById('inputText').addEventListener('keydown', handleShortcut);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (modalOverlay.classList.contains('show')) closeModal();
+          if (memoModalOverlay.classList.contains('show')) closeMemoModal();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
