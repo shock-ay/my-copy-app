@@ -45,7 +45,7 @@
     }
 
     .panel-title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #1e293b;
       letter-spacing: -0.3px;
@@ -53,7 +53,7 @@
 
     .header-actions {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
     }
 
@@ -63,8 +63,8 @@
       color: #ffffff;
       border: none;
       border-radius: 6px;
-      padding: 7px 12px;
-      font-size: 0.8rem;
+      padding: 6px 10px;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
@@ -72,7 +72,7 @@
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     .action-main-btn:hover {
@@ -94,6 +94,16 @@
     .memo-open-btn:hover {
       background: linear-gradient(135deg, #334155, #1e293b);
       box-shadow: 0 4px 8px rgba(71, 85, 105, 0.3);
+    }
+
+    .export-btn {
+      background: linear-gradient(135deg, #059669, #047857);
+      box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+    }
+
+    .export-btn:hover {
+      background: linear-gradient(135deg, #047857, #065f46);
+      box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
     }
 
     /* メインコンテンツエリア */
@@ -665,7 +675,8 @@
     <div class="panel-header">
       <span class="panel-title">コピーリスト</span>
       <div class="header-actions">
-        <button class="action-main-btn memo-open-btn" id="openMemoModal">🏢 メアド管理</button>
+        <button class="action-main-btn export-btn" id="exportDataBtn" title="登録データをJSONファイルとして保存">📥 出力</button>
+        <button class="action-main-btn memo-open-btn" id="openMemoModal">🏢 メアド</button>
         <button class="action-main-btn" id="openModal">＋ 追加</button>
       </div>
     </div>
@@ -780,6 +791,32 @@
 
     function saveCompanies() {
       localStorage.setItem(COMPANIES_STORAGE_KEY, JSON.stringify(companiesList));
+    }
+
+    // ★ エクスポート機能（メインリスト + メアド管理データを一括でJSONファイル出力）
+    function exportData() {
+      const exportObject = {
+        exportedAt: new Date().toISOString(),
+        copyItems: copyItems,
+        companiesList: companiesList
+      };
+
+      const jsonString = JSON.stringify(exportObject, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const now = new Date();
+      const dateStr = now.getFullYear() +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        String(now.getDate()).padStart(2, '0');
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `one_click_copy_data_${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     function katakanaToHiragana(src) {
@@ -1228,13 +1265,12 @@
       toggleAddBoxBtn.textContent = '＋ 新規追加';
     }
 
-    // ▼ コピーリスト追加時のフリガナ頭文字を「★」にする処理
+    // コピーリスト追加時のフリガナ頭文字を「★」にする処理
     function registerCompanyToCopyList(id, button) {
       const comp = companiesList.find(c => c.id === id);
       if (!comp) return;
 
       const targetGroup = comp.company || '会社・メアド';
-      // ★ 頭文字（フリガナ）を「★」に固定
       const targetGroupFurigana = '★';
 
       let addedCount = 0;
@@ -1259,7 +1295,6 @@
         addedCount++;
       }
 
-      // 絞り込み対象を「★」へ更新
       selectedInitialChar = '★';
 
       saveItems();
@@ -1327,6 +1362,7 @@
 
       const openModalBtn = document.getElementById('openModal');
       const openMemoModalBtn = document.getElementById('openMemoModal');
+      const exportDataBtn = document.getElementById('exportDataBtn');
       const modalOverlay = document.getElementById('modalOverlay');
       const memoModalOverlay = document.getElementById('memoModalOverlay');
       const saveBtn = document.getElementById('saveBtn');
@@ -1409,6 +1445,10 @@
         openMemoModalBtn.addEventListener('click', () => {
           memoModalOverlay.classList.add('show');
         });
+      }
+
+      if (exportDataBtn) {
+        exportDataBtn.addEventListener('click', exportData);
       }
 
       saveBtn.addEventListener('click', handleSave);
