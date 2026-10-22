@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ワンクリックコピー | サイドパネル</title>
   <style>
@@ -9,7 +7,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -23,10 +21,11 @@
     /* サイドパネル全体 */
     .side-panel {
       width: 410px;
+      max-width: 100vw;
       background-color: #ffffff;
       border-right: 1px solid rgba(0, 0, 0, 0.08);
       box-shadow: 4px 0 20px rgba(0, 0, 0, 0.04);
-      padding: 18px 14px;
+      padding: 18px 14px 12px 14px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -45,7 +44,7 @@
     }
 
     .panel-title {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #1e293b;
       letter-spacing: -0.3px;
@@ -53,7 +52,7 @@
 
     .header-actions {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
     }
 
@@ -63,8 +62,8 @@
       color: #ffffff;
       border: none;
       border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 0.75rem;
+      padding: 7px 12px;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
@@ -72,7 +71,7 @@
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
     }
 
     .action-main-btn:hover {
@@ -96,14 +95,21 @@
       box-shadow: 0 4px 8px rgba(71, 85, 105, 0.3);
     }
 
-    .export-btn {
-      background: linear-gradient(135deg, #059669, #047857);
-      box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+    .sub-action-btn {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
 
-    .export-btn:hover {
-      background: linear-gradient(135deg, #047857, #065f46);
-      box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+    .sub-action-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
     }
 
     /* メインコンテンツエリア */
@@ -112,82 +118,119 @@
       flex: 1;
       gap: 10px;
       min-height: 0;
+      overflow: hidden;
     }
 
-    /* 頭文字インデックスバー */
+    /* フッターエリア */
+    .panel-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #eef2f7;
+      flex-shrink: 0;
+    }
+
+    /* メインリスト側のインデックスバー */
+    #indexBar {
+      height: 100%;
+      max-height: none;
+    }
+
     .index-bar {
-      width: 40px;
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
+      width: 42px;
+      background-color: #ffffff;
+      border: 2px solid #0f172a;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 8px 0;
-      gap: 5px;
-      overflow-y: auto;
+      padding: 2px;
+      gap: 2px;
+      overflow-y: hidden;
+      overflow-x: hidden;
       user-select: none;
       flex-shrink: 0;
     }
 
-    .index-bar::-webkit-scrollbar {
-      width: 3px;
-    }
-    .index-bar::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
-    }
-
     .index-item {
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       font-weight: 700;
       color: #475569;
-      padding: 4px 0;
-      width: 28px;
-      height: 28px;
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      padding: 2px 1px;
+      width: 32px;
+      flex: 1;
+      max-height: 62px;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      border-radius: 6px;
+      cursor: grab;
       transition: all 0.15s ease;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .index-item:active {
+      cursor: grabbing;
+    }
+
+    .index-item.dragging {
+      opacity: 0.4;
+      border: 2px dashed #2563eb;
     }
 
     .index-item:hover {
-      background-color: #e2e8f0;
-      color: #1e293b;
+      background-color: #eff6ff;
+      border-color: #3b82f6;
+      color: #2563eb;
     }
 
     .index-item.active {
       background-color: #2563eb;
+      border-color: #2563eb;
       color: #ffffff;
       box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
     }
 
     .index-item.all-item {
-      color: #64748b;
-      font-size: 0.7rem;
-      border-bottom: 1px solid #e2e8f0;
-      margin-bottom: 4px;
-      padding-bottom: 6px;
-      border-radius: 6px 6px 0 0;
+      color: #0f172a;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background-color: #cbd5e1;
+      border: none;
+      border-bottom: 2px solid #0f172a;
+      margin-bottom: 2px;
+      padding: 4px 0;
+      writing-mode: horizontal-tb;
       width: 100%;
+      flex: 0 0 auto;
+      height: 32px;
+      max-height: 32px;
+      border-radius: 9px 9px 0 0;
+      cursor: pointer;
     }
 
     .index-item.all-item.active {
       background-color: #475569;
+      border-color: #475569;
       color: #ffffff;
-      border-bottom-color: transparent;
     }
 
     /* リスト構造 */
     .card-list {
       flex: 1;
       overflow-y: auto;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      padding-right: 4px;
+      padding-right: 2px;
       scroll-behavior: smooth;
     }
 
@@ -259,12 +302,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
     }
 
     .card-label-area {
       display: flex;
       align-items: center;
       gap: 6px;
+      flex: 1;
+      min-width: 0;
     }
 
     .drag-handle-item {
@@ -273,6 +319,7 @@
       color: #94a3b8;
       padding: 0 2px;
       user-select: none;
+      flex-shrink: 0;
     }
     .drag-handle-item:active {
       cursor: grabbing;
@@ -283,6 +330,10 @@
       font-size: 0.75rem;
       font-weight: 700;
       color: #475569;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+      display: inline-block;
     }
 
     .copy-feedback {
@@ -295,6 +346,7 @@
       border-radius: 4px;
       opacity: 0;
       transition: opacity 0.2s ease;
+      flex-shrink: 0;
     }
     .copy-feedback.show {
       opacity: 1;
@@ -303,6 +355,7 @@
     .card-actions {
       display: flex;
       gap: 4px;
+      flex-shrink: 0;
     }
 
     .action-btn {
@@ -342,10 +395,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       transition: all 0.15s ease;
+      overflow: hidden;
+    }
+
+    .copy-btn-text {
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+      display: inline-block;
     }
 
     .copy-btn:hover {
@@ -388,6 +446,7 @@
     .modal-content {
       background: #ffffff;
       width: 340px;
+      max-width: 90vw;
       max-height: 85vh;
       border-radius: 12px;
       padding: 22px;
@@ -402,7 +461,8 @@
 
     .memo-modal-content {
       background: #ffffff;
-      width: 360px;
+      width: 420px;
+      max-width: 92vw;
       height: 88vh;
       max-height: 88vh;
       border-radius: 12px;
@@ -435,6 +495,16 @@
     .form-group.flex-grow {
       flex: 1;
       min-height: 0;
+    }
+
+    /* アドレス帳レイアウト */
+    .address-book-body {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      margin-top: 4px;
     }
 
     .form-label {
@@ -486,12 +556,13 @@
     .company-list-container {
       flex: 1;
       overflow-y: auto;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-top: 4px;
       padding-right: 2px;
       min-height: 0;
+      scroll-behavior: smooth;
     }
 
     .company-item-row {
@@ -508,12 +579,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
     }
 
     .company-name-text {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      color: #1e293b;
+      font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      color: #0f172a;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+      display: inline-block;
     }
 
     .company-item-row input[type="text"],
@@ -532,40 +609,78 @@
       border-color: #2563eb;
     }
 
-    /* ID単体ワンクリックコピー用スタイル */
-    .id-copy-box {
+    .id-copy-container, .email-copy-container {
+      width: 100%;
+    }
+
+    .id-copy-box, .email-copy-box {
       width: 100%;
       text-align: left;
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      border-radius: 6px;
-      padding: 6px 8px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 0;
       font-size: 0.8rem;
       font-weight: 600;
       color: #334155;
       cursor: pointer;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      align-items: stretch;
       transition: all 0.15s ease;
       user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
-    .id-copy-box:hover {
+    .copy-box-label {
+      background-color: #f1f5f9;
+      border-right: 1px solid #cbd5e1;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      min-width: 50px;
+    }
+
+    .copy-box-val {
+      padding: 6px 10px;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .id-copy-box:hover, .email-copy-box:hover {
       background-color: #eff6ff;
       border-color: #2563eb;
       color: #2563eb;
     }
 
-    .id-copy-box::after {
+    .id-copy-box:hover .copy-box-label, .email-copy-box:hover .copy-box-label {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+      border-right-color: #93c5fd;
+    }
+
+    .id-copy-box::after, .email-copy-box::after {
       content: "📋";
       font-size: 0.7rem;
       opacity: 0.5;
+      flex-shrink: 0;
+      padding-right: 10px;
+      display: flex;
+      align-items: center;
     }
 
     .company-actions {
       display: flex;
       gap: 4px;
+      flex-shrink: 0;
     }
 
     .modal-footer {
@@ -626,23 +741,6 @@
     }
     .btn-add-sub:hover { background: #15803d; }
 
-    .btn-register-sub {
-      background: #0284c7;
-      color: white;
-      border: none;
-      padding: 3px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.7rem;
-      font-weight: 600;
-      transition: all 0.15s ease;
-    }
-    .btn-register-sub:hover { background: #0369a1; }
-    .btn-register-sub.success {
-      background-color: #16a34a !important;
-      transform: scale(1.05);
-    }
-
     .btn-edit-sub {
       background: #2563eb;
       color: white;
@@ -675,18 +773,25 @@
     <div class="panel-header">
       <span class="panel-title">コピーリスト</span>
       <div class="header-actions">
-        <button class="action-main-btn export-btn" id="exportDataBtn" title="登録データをJSONファイルとして保存">📥 出力</button>
-        <button class="action-main-btn memo-open-btn" id="openMemoModal">🏢 メアド</button>
+        <button class="action-main-btn memo-open-btn" id="openMemoModal">🏢 クライアント管理</button>
         <button class="action-main-btn" id="openModal">＋ 追加</button>
       </div>
     </div>
     
     <div class="panel-body">
       <!-- インデックスバー -->
-      <div class="index-bar" id="indexBar" title="頭文字で絞り込み"></div>
+      <div class="index-bar" id="indexBar" title="ドラッグ＆ドロップで並び替え可能"></div>
 
       <!-- カードリスト -->
       <div class="card-list" id="cardList"></div>
+    </div>
+
+    <!-- パネル最下部 -->
+    <div class="panel-footer">
+      <button class="sub-action-btn" id="exportBtn" title="データをJSON形式で保存">📤 エクスポート</button>
+      <button class="sub-action-btn" id="importBtn" title="JSONファイルから復元">📥 インポート</button>
+      <!-- 非表示のファイル入力要素 -->
+      <input type="file" id="importFileInput" accept=".json" style="display: none;">
     </div>
   </aside>
 
@@ -696,19 +801,14 @@
       <div class="modal-title" id="modalTitle">新しい項目を追加</div>
       
       <div class="form-group">
-        <label class="form-label">グループ名</label>
-        <input type="text" id="inputGroup" class="form-input" placeholder="例: メールテンプレート、アドレスなど" list="groupSuggestions">
+        <label class="form-label">インデックス登録名</label>
+        <input type="text" id="inputGroupFurigana" class="form-input" placeholder="会社、社名など" list="groupSuggestions">
         <datalist id="groupSuggestions"></datalist>
       </div>
 
       <div class="form-group">
-        <label class="form-label">グループ名のフリガナ（ひらがな/カタカナ）</label>
-        <input type="text" id="inputGroupFurigana" class="form-input" placeholder="例: めーるてんぷれーと">
-      </div>
-
-      <div class="form-group">
         <label class="form-label">ラベル（項目のタイトル）</label>
-        <input type="text" id="inputLabel" class="form-input" placeholder="例: 挨拶、返信など">
+        <input type="text" id="inputLabel" class="form-input" placeholder="デフォルトなど">
       </div>
 
       <div class="form-group">
@@ -726,7 +826,7 @@
   <!-- 複数会社名・ID・メールアドレス登録用モーダル -->
   <div class="modal-overlay" id="memoModalOverlay">
     <div class="modal-content memo-modal-content">
-      <div class="modal-title">会社名・ID・メールアドレスの管理</div>
+      <div class="modal-title">クライアント管理</div>
       
       <div class="form-group">
         <div class="section-header-row">
@@ -735,6 +835,7 @@
         </div>
         <div class="form-add-box" id="formAddBox">
           <input type="text" id="newCompanyName" class="form-input" placeholder="会社名">
+          <input type="text" id="newCompanyFurigana" class="form-input" placeholder="きょうふくどう等">
           <input type="text" id="newCompanyId" class="form-input" placeholder="ID">
           <input type="email" id="newEmailAddress" class="form-input" placeholder="メールアドレス">
           <button class="btn-add-sub" id="addCompanyBtn">登録する</button>
@@ -743,7 +844,10 @@
 
       <div class="form-group flex-grow">
         <label class="form-label">登録済み一覧</label>
-        <div class="company-list-container" id="companyListContainer"></div>
+        <div class="address-book-body">
+          <div class="index-bar" id="companyIndexBar" title="頭文字で絞り込み"></div>
+          <div class="company-list-container" id="companyListContainer"></div>
+        </div>
       </div>
 
       <div class="modal-footer">
@@ -757,31 +861,60 @@
     const COPY_ITEMS_KEY = 'one_click_copy_items_v15';
     const COMPANIES_STORAGE_KEY = 'one_click_copy_companies_list';
 
-    let copyItems = [
-      {
-        id: '1',
-        group: 'メールテンプレート',
-        groupFurigana: 'めーるてんぷれーと',
-        label: 'お礼と挨拶',
-        text: 'お世話になっております。よろしくお願いいたします。'
-      }
-    ];
-
-    let companiesList = [
-      { id: 'c1', company: '株式会社〇〇', accountId: 'user_123', email: 'info@example.com' }
-    ];
+    let copyItems = [];
+    let companiesList = [];
 
     let editingId = null;
-    let selectedInitialChar = null;
+    let selectedIndexName = 'ALL';
+    let selectedCompanyInitialChar = 'ALL';
+
+    function fitFontSize(element, maxFontSizeEm, minFontSizeEm = 0.5) {
+      if (!element) return;
+      element.style.fontSize = `${maxFontSizeEm}rem`;
+      element.style.whiteSpace = 'nowrap';
+      
+      const parent = element.parentElement;
+      if (!parent || parent.clientWidth === 0) return;
+
+      let currentSize = maxFontSizeEm;
+      while (element.scrollWidth > parent.clientWidth && currentSize > minFontSizeEm) {
+        currentSize -= 0.02;
+        element.style.fontSize = `${currentSize.toFixed(2)}rem`;
+      }
+    }
 
     function loadItems() {
       const saved = localStorage.getItem(COPY_ITEMS_KEY);
       if (saved) {
         try { copyItems = JSON.parse(saved); } catch (e) { console.error(e); }
+      } else {
+        copyItems = [
+          {
+            id: '1',
+            group: 'メールテンプレート',
+            groupFurigana: 'メールテンプレート',
+            label: 'お礼と挨拶',
+            text: 'お世話になっております。よろしくお願いいたします。'
+          }
+        ];
+        saveItems();
       }
+
       const savedCompanies = localStorage.getItem(COMPANIES_STORAGE_KEY);
       if (savedCompanies) {
         try { companiesList = JSON.parse(savedCompanies); } catch (e) { console.error(e); }
+      } else {
+        companiesList = [
+          { id: '1792377702677', company: 'DRD4株式会社', furigana: 'でぃーあーるでぃーふぉー', accountId: 'support+drd4@brand-patroller.com', email: 'ads+drd4@coursesetter.jp' },
+          { id: '1792380746037', company: '株式会社ハーブ健康本舗', furigana: 'はーぶけんこうほんぽ', accountId: 'omori+herb@brand-patroller.jp', email: 'ads+herb@coursesetter.jp' },
+          { id: '1792395216949', company: 'SBI FXトレード株式会社', furigana: 'えすびーあいえふえっくすとれーど', accountId: 'yamada+sbifx@brand-patroller.jp', email: 'ads+sbifx@coursesetter.jp' },
+          { id: '1792476254330', company: '株式会社SmartHR', furigana: 'すまーとえいちあーる', accountId: 'support+smarthr@brand-patroller.com', email: 'ads+smarthr@coursesetter.jp' },
+          { id: '1792485740026', company: '株式会社トウ・キユーピー', furigana: 'とうきゆーぴー', accountId: 'support+kewpie@brand-patroller.jp', email: 'ads+kewpie@coursesetter.jp' },
+          { id: '1792541286678', company: '株式会社ゼンケア', furigana: 'ぜんけあ', accountId: 'omori+zencare@kyoufukudou.jp', email: 'ads+zencare@coursesetter.jp' },
+          { id: '1792541326967', company: '株式会社京福堂', furigana: 'きょうふくどう', accountId: 'support+kyoufuku@brand-patroller.com', email: 'ads+kyoufuku@coursesetter.jp' },
+          { id: '1792551089974', company: '㈱オートリサイクルナカシマ', furigana: 'おーとりさいくるなかしま', accountId: 'omori+nakashima@kyoufukudou.jp', email: 'ads+nakashima@coursesetter.jp' }
+        ];
+        saveCompanies();
       }
     }
 
@@ -793,33 +926,8 @@
       localStorage.setItem(COMPANIES_STORAGE_KEY, JSON.stringify(companiesList));
     }
 
-    // ★ エクスポート機能（メインリスト + メアド管理データを一括でJSONファイル出力）
-    function exportData() {
-      const exportObject = {
-        exportedAt: new Date().toISOString(),
-        copyItems: copyItems,
-        companiesList: companiesList
-      };
-
-      const jsonString = JSON.stringify(exportObject, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-
-      const now = new Date();
-      const dateStr = now.getFullYear() +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        String(now.getDate()).padStart(2, '0');
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `one_click_copy_data_${dateStr}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
     function katakanaToHiragana(src) {
+      if (!src) return '';
       return src.replace(/[\u30a1-\u30f6]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60));
     }
 
@@ -828,16 +936,36 @@
       return str.replace(/[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/g, '');
     }
 
-    // 頭文字の取得（「★」の場合はそのまま「★」を保持）
     function getExactInitialChar(furiganaOrGroup) {
       if (!furiganaOrGroup) return '#';
-      if (furiganaOrGroup.trim() === '★') return '★';
+      if (furiganaOrGroup.trim() === 'クラ') return 'クラ';
       const cleanStr = removeKanji(furiganaOrGroup);
       const hira = katakanaToHiragana((cleanStr || furiganaOrGroup).trim());
       const ch = hira.charAt(0);
 
       if (/[a-zA-Z]/.test(ch)) return ch.toUpperCase();
       return ch || '#';
+    }
+
+    function getGyoHeaderChar(furiganaOrGroup) {
+      const ch = getExactInitialChar(furiganaOrGroup);
+      if (ch === 'クラ') return 'クラ';
+
+      if (/[あ-おぁ-ぉかがきぎくぐけげこご]/.test(ch)) return /[あ-おぁ-ぉ]/.test(ch) ? 'あ' : 'か';
+      if (/[さざしじすずせぜそぞ]/.test(ch)) return 'さ';
+      if (/[ただちぢつづてでとどっ]/.test(ch)) return 'た';
+      if (/[なにぬねの]/.test(ch)) return 'な';
+      if (/[はばぱひびぴふぶぷへべぺほぼぽ]/.test(ch)) return 'は';
+      if (/[まみむめも]/.test(ch)) return 'ま';
+      if (/[やゆよゃゅょ]/.test(ch)) return 'や';
+      if (/[らりるれろ]/.test(ch)) return 'ら';
+      if (/[わ-ん]/.test(ch)) return 'わ';
+      if (/[A-Za-z]/.test(ch)) return '英';
+
+      if ('あいうえお'.includes(ch)) return 'あ';
+      if ('かきくけこ'.includes(ch)) return 'か';
+
+      return '他';
     }
 
     function renderCards() {
@@ -848,46 +976,67 @@
       cardList.innerHTML = '';
       indexBar.innerHTML = '';
 
-      const groupMap = new Map();
+      // 登録順のままグループ一覧を取得
+      const orderedGroups = [];
       copyItems.forEach(item => {
-        const gName = item.group || '未分類';
-        const gFuri = item.groupFurigana || gName;
-        if (!groupMap.has(gName)) {
-          groupMap.set(gName, gFuri);
+        const gFuri = item.groupFurigana || item.group || '未分類';
+        if (!orderedGroups.includes(gFuri)) {
+          orderedGroups.push(gFuri);
         }
       });
 
-      const sortedGroups = Array.from(groupMap.entries()).sort((a, b) => {
-        // ★印は常にインデックスで区別されるように保持
-        if (a[1] === '★') return -1;
-        if (b[1] === '★') return 1;
-        const furiA = katakanaToHiragana(removeKanji(a[1]) || a[0]);
-        const furiB = katakanaToHiragana(removeKanji(b[1]) || b[0]);
-        return furiA.localeCompare(furiB, 'ja');
+      // 「全」ボタン
+      const allItemEl = document.createElement('div');
+      allItemEl.className = `index-item all-item ${selectedIndexName === 'ALL' ? 'active' : ''}`;
+      allItemEl.textContent = '全';
+      allItemEl.title = 'すべてのグループを表示';
+      allItemEl.addEventListener('click', () => {
+        selectedIndexName = 'ALL';
+        renderCards();
       });
+      indexBar.appendChild(allItemEl);
 
-      const indexItemsMap = [];
-
-      sortedGroups.forEach(([groupName, groupFurigana]) => {
-        const items = copyItems.filter(item => (item.group || '未分類') === groupName);
+      // インデックス項目の生成
+      orderedGroups.forEach(groupFurigana => {
+        const items = copyItems.filter(item => (item.groupFurigana || item.group || '未分類') === groupFurigana);
         if (items.length === 0) return;
 
-        const initialChar = getExactInitialChar(groupFurigana);
+        const indexItemEl = document.createElement('div');
+        indexItemEl.className = `index-item ${selectedIndexName === groupFurigana ? 'active' : ''}`;
+        indexItemEl.textContent = groupFurigana;
+        indexItemEl.title = `「${groupFurigana}」で絞り込み（ドラッグして並び替え可能）`;
+        indexItemEl.setAttribute('draggable', 'true');
+        indexItemEl.setAttribute('data-group-furigana', groupFurigana);
+
+        indexItemEl.addEventListener('click', () => {
+          if (selectedIndexName === groupFurigana) {
+            selectedIndexName = 'ALL';
+          } else {
+            selectedIndexName = groupFurigana;
+          }
+          renderCards();
+        });
+        indexBar.appendChild(indexItemEl);
+      });
+
+      // メインカードリストの生成
+      orderedGroups.forEach(groupFurigana => {
+        const items = copyItems.filter(item => (item.groupFurigana || item.group || '未分類') === groupFurigana);
+        if (items.length === 0) return;
+
+        if (selectedIndexName !== 'ALL' && selectedIndexName !== null && selectedIndexName !== groupFurigana) {
+          return;
+        }
 
         const groupCard = document.createElement('div');
-        groupCard.className = 'group-card';
+        groupCard.className = 'group-card show';
         groupCard.setAttribute('draggable', 'true');
-        groupCard.setAttribute('data-group', groupName);
-        groupCard.setAttribute('data-initial', initialChar);
-        groupCard.id = `group-${encodeURIComponent(groupName)}`;
-
-        if (selectedInitialChar === 'ALL' || (selectedInitialChar && selectedInitialChar === initialChar)) {
-          groupCard.classList.add('show');
-        }
+        groupCard.setAttribute('data-group', groupFurigana);
+        groupCard.id = `group-${encodeURIComponent(groupFurigana)}`;
 
         const header = document.createElement('div');
         header.className = 'group-header';
-        header.innerHTML = `<span>📂 ${escapeHTML(groupName)}</span><span>(${items.length})</span>`;
+        header.innerHTML = `<span>📂 ${escapeHTML(groupFurigana)}</span><span>(${items.length})</span>`;
         groupCard.appendChild(header);
 
         const itemsContainer = document.createElement('div');
@@ -913,7 +1062,7 @@
               </div>
             </div>
             <button class="copy-btn" title="${escapeHTML(item.text)}" onclick="copyText(this)">
-              ${escapeHTML(item.text)}
+              <span class="copy-btn-text">${escapeHTML(item.text)}</span>
             </button>
           `;
           itemsContainer.appendChild(itemBlock);
@@ -921,53 +1070,85 @@
 
         groupCard.appendChild(itemsContainer);
         cardList.appendChild(groupCard);
-
-        if (!indexItemsMap.some(idx => idx.char === initialChar)) {
-          indexItemsMap.push({ char: initialChar, targetId: `group-${encodeURIComponent(groupName)}` });
-        }
-      });
-
-      const allItemEl = document.createElement('div');
-      allItemEl.className = `index-item all-item ${selectedInitialChar === 'ALL' ? 'active' : ''}`;
-      allItemEl.textContent = '全';
-      allItemEl.title = 'すべてのグループを表示';
-      allItemEl.addEventListener('click', () => {
-        selectedInitialChar = (selectedInitialChar === 'ALL') ? null : 'ALL';
-        renderCards();
-      });
-      indexBar.appendChild(allItemEl);
-
-      indexItemsMap.forEach(indexItem => {
-        const itemEl = document.createElement('div');
-        itemEl.className = `index-item ${selectedInitialChar === indexItem.char ? 'active' : ''}`;
-        itemEl.textContent = indexItem.char;
-        itemEl.title = `「${indexItem.char}」で絞り込み表示`;
-        
-        itemEl.addEventListener('click', () => {
-          if (selectedInitialChar === indexItem.char) {
-            selectedInitialChar = null;
-          } else {
-            selectedInitialChar = indexItem.char;
-          }
-          renderCards();
-
-          if (selectedInitialChar) {
-            const target = document.getElementById(indexItem.targetId);
-            if (target) {
-              cardList.scrollTo({
-                top: target.offsetTop - cardList.offsetTop,
-                behavior: 'smooth'
-              });
-            }
-          }
-        });
-        indexBar.appendChild(itemEl);
       });
 
       updateGroupSuggestions();
       initDragAndDrop();
+      initIndexDragAndDrop();
+
+      setTimeout(() => {
+        document.querySelectorAll('.card-label').forEach(el => fitFontSize(el, 0.75));
+        document.querySelectorAll('.copy-btn-text').forEach(el => fitFontSize(el, 0.85));
+      }, 0);
     }
 
+    /* インデックスバーのドラッグ＆ドロップ処理 */
+    function initIndexDragAndDrop() {
+      const indexBar = document.getElementById('indexBar');
+      const indexItems = indexBar.querySelectorAll('.index-item:not(.all-item)');
+
+      indexItems.forEach(indexItem => {
+        indexItem.addEventListener('dragstart', (e) => {
+          e.stopPropagation();
+          indexItem.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', 'index:' + indexItem.getAttribute('data-group-furigana'));
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        indexItem.addEventListener('dragend', (e) => {
+          e.stopPropagation();
+          indexItem.classList.remove('dragging');
+        });
+
+        indexItem.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const draggingIndex = indexBar.querySelector('.index-item.dragging');
+          if (!draggingIndex || draggingIndex === indexItem) return;
+
+          const rect = indexItem.getBoundingClientRect();
+          const midpoint = rect.top + rect.height / 2;
+
+          if (e.clientY < midpoint) {
+            indexBar.insertBefore(draggingIndex, indexItem);
+          } else {
+            indexBar.insertBefore(draggingIndex, indexItem.nextElementSibling);
+          }
+        });
+
+        indexItem.addEventListener('drop', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          updateGroupOrderFromIndexDOM();
+        });
+      });
+    }
+
+    /* インデックスバーの順番に連動してメインリスト（copyItems）のデータを並び替えて保存・再描画 */
+    function updateGroupOrderFromIndexDOM() {
+      const indexBar = document.getElementById('indexBar');
+      const indexItems = indexBar.querySelectorAll('.index-item:not(.all-item)');
+      const newGroupOrder = [];
+
+      indexItems.forEach(item => {
+        const groupName = item.getAttribute('data-group-furigana');
+        if (groupName) newGroupOrder.push(groupName);
+      });
+
+      const reorderedItems = [];
+      newGroupOrder.forEach(groupName => {
+        const itemsInGroup = copyItems.filter(i => (i.groupFurigana || i.group || '未分類') === groupName);
+        reorderedItems.push(...itemsInGroup);
+      });
+
+      const missingItems = copyItems.filter(i => !newGroupOrder.includes(i.groupFurigana || i.group || '未分類'));
+      copyItems = [...reorderedItems, ...missingItems];
+
+      saveItems();
+      renderCards(); // メインリストも連動して自動更新
+    }
+
+    /* メインリスト側のドラッグ＆ドロップ処理 */
     function initDragAndDrop() {
       const cardList = document.getElementById('cardList');
       const groupCards = cardList.querySelectorAll('.group-card');
@@ -1049,7 +1230,9 @@
 
     function updateItemsOrderFromDOM() {
       const cardList = document.getElementById('cardList');
-      const newCopyItems = [];
+      const visibleItemIds = new Set();
+      const orderedVisibleItems = [];
+
       const groupCards = cardList.querySelectorAll('.group-card');
 
       groupCards.forEach(groupCard => {
@@ -1061,12 +1244,16 @@
           const item = copyItems.find(i => i.id === id);
           if (item) {
             item.group = groupName;
-            newCopyItems.push(item);
+            item.groupFurigana = groupName;
+            orderedVisibleItems.push(item);
+            visibleItemIds.add(id);
           }
         });
       });
 
-      copyItems = newCopyItems;
+      const hiddenItems = copyItems.filter(i => !visibleItemIds.has(i.id));
+      copyItems = [...orderedVisibleItems, ...hiddenItems];
+
       saveItems();
       renderCards();
     }
@@ -1074,7 +1261,7 @@
     function updateGroupSuggestions() {
       const groupSuggestions = document.getElementById('groupSuggestions');
       if (!groupSuggestions) return;
-      const groups = [...new Set(copyItems.map(item => item.group))];
+      const groups = [...new Set(copyItems.map(item => item.groupFurigana || item.group))];
       groupSuggestions.innerHTML = '';
       groups.forEach(g => {
         const option = document.createElement('option');
@@ -1090,12 +1277,11 @@
       editingId = id;
       document.getElementById('modalTitle').textContent = '項目を編集';
       document.getElementById('saveBtn').textContent = '更新する';
-      document.getElementById('inputGroup').value = item.group || '';
-      document.getElementById('inputGroupFurigana').value = item.groupFurigana || removeKanji(item.group) || '';
+      document.getElementById('inputGroupFurigana').value = item.groupFurigana || item.group || '';
       document.getElementById('inputLabel').value = item.label || '';
       document.getElementById('inputText').value = item.text || '';
       document.getElementById('modalOverlay').classList.add('show');
-      document.getElementById('inputGroup').focus();
+      document.getElementById('inputGroupFurigana').focus();
     }
 
     function closeModal() {
@@ -1104,13 +1290,12 @@
     }
 
     function handleSave() {
-      const inputGroup = document.getElementById('inputGroup');
       const inputGroupFurigana = document.getElementById('inputGroupFurigana');
       const inputLabel = document.getElementById('inputLabel');
       const inputText = document.getElementById('inputText');
 
-      const group = inputGroup.value.trim() || '未分類';
-      const groupFurigana = removeKanji(inputGroupFurigana.value.trim()) || inputGroupFurigana.value.trim() || group;
+      const groupFurigana = inputGroupFurigana.value.trim() || '未分類';
+      const group = groupFurigana;
       const label = inputLabel.value.trim();
       const text = inputText.value.trim();
 
@@ -1118,12 +1303,6 @@
         alert('ラベルとコピーするテキストの両方を入力してください。');
         return;
       }
-
-      copyItems.forEach(i => {
-        if ((i.group || '未分類') === group) {
-          i.groupFurigana = groupFurigana;
-        }
-      });
 
       if (editingId) {
         const item = copyItems.find(i => i.id === editingId);
@@ -1143,7 +1322,7 @@
         });
       }
 
-      selectedInitialChar = getExactInitialChar(groupFurigana);
+      selectedIndexName = groupFurigana;
 
       saveItems();
       renderCards();
@@ -1197,6 +1376,7 @@
     }
 
     function showFeedback(feedbackElement) {
+      if (!feedbackElement) return;
       feedbackElement.classList.add('show');
       setTimeout(() => {
         feedbackElement.classList.remove('show');
@@ -1204,6 +1384,7 @@
     }
 
     function escapeHTML(str) {
+      if (!str) return '';
       return str.replace(/[&<>'"]/g, 
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
       );
@@ -1211,33 +1392,100 @@
 
     function renderCompaniesList() {
       const companyListContainer = document.getElementById('companyListContainer');
-      if (!companyListContainer) return;
+      const companyIndexBar = document.getElementById('companyIndexBar');
+      if (!companyListContainer || !companyIndexBar) return;
 
       companyListContainer.innerHTML = '';
-      companiesList.forEach((comp) => {
+      companyIndexBar.innerHTML = '';
+
+      const sortedCompanies = [...companiesList].sort((a, b) => {
+        const furiA = katakanaToHiragana(removeKanji(a.furigana) || a.furigana || a.company);
+        const furiB = katakanaToHiragana(removeKanji(b.furigana) || b.furigana || b.company);
+        return furiA.localeCompare(furiB, 'ja');
+      });
+
+      const presentGyoSet = new Set();
+
+      sortedCompanies.forEach((comp) => {
+        const gyoChar = getGyoHeaderChar(comp.furigana || comp.company);
+        presentGyoSet.add(gyoChar);
+
+        if (selectedCompanyInitialChar !== 'ALL' && selectedCompanyInitialChar !== gyoChar) {
+          return;
+        }
+
+        const rowId = `comp-row-${comp.id}`;
         const row = document.createElement('div');
         row.className = 'company-item-row';
+        row.id = rowId;
+        row.setAttribute('data-gyo', gyoChar);
         
         row.innerHTML = `
           <div class="company-item-header">
-            <span class="company-name-text">${escapeHTML(comp.company || '(会社名なし)')}</span>
+            <span class="company-name-text" title="${escapeHTML(comp.company || '')}">${escapeHTML(comp.company || '(会社名なし)')}</span>
             <div class="company-actions">
-              <button class="btn-register-sub" id="copy-sub-btn-${comp.id}" onclick="registerCompanyToCopyList('${comp.id}', this)">コピペ</button>
               <button class="btn-edit-sub" id="edit-btn-${comp.id}" onclick="toggleEditEmail('${comp.id}')">編集</button>
               <button class="btn-del-sub" onclick="deleteCompany('${comp.id}')">削除</button>
             </div>
           </div>
+          <input type="text" id="comp-furigana-${comp.id}" value="${escapeHTML(comp.furigana || '')}" placeholder="ふりがな" readonly style="display: none; margin-bottom: 2px;">
+          
           <div class="id-copy-container" style="position: relative;">
             <div class="id-copy-box" id="comp-id-box-${comp.id}" title="クリックしてIDをコピー" onclick="copyDirectText('${escapeHTML(comp.accountId || '')}', this)">
-              <span>ID: ${escapeHTML(comp.accountId || '(未設定)')}</span>
+              <div class="copy-box-label">ID</div>
+              <span class="copy-box-val">${escapeHTML(comp.accountId || '(未設定)')}</span>
               <span class="copy-feedback" style="position: absolute; right: 28px; top: 50%; transform: translateY(-50%);">コピー完了！</span>
             </div>
             <input type="text" id="comp-accountid-${comp.id}" value="${escapeHTML(comp.accountId || '')}" placeholder="ID" style="display: none;">
           </div>
-          <input type="email" id="comp-email-${comp.id}" value="${escapeHTML(comp.email || '')}" placeholder="メールアドレス" readonly>
+
+          <div class="email-copy-container" style="position: relative;">
+            <div class="email-copy-box" id="comp-email-box-${comp.id}" title="クリックしてメインリストに追加・貼り付け" onclick="registerCompanyEmailToCopyList('${comp.id}', this)">
+              <div class="copy-box-label">Mail</div>
+              <span class="copy-box-val">${escapeHTML(comp.email || '(未設定)')}</span>
+              <span class="copy-feedback" style="position: absolute; right: 28px; top: 50%; transform: translateY(-50%);">登録完了！</span>
+            </div>
+            <input type="email" id="comp-email-${comp.id}" value="${escapeHTML(comp.email || '')}" placeholder="メールアドレス" style="display: none;">
+          </div>
         `;
         companyListContainer.appendChild(row);
       });
+
+      const allItemEl = document.createElement('div');
+      allItemEl.className = `index-item all-item ${selectedCompanyInitialChar === 'ALL' ? 'active' : ''}`;
+      allItemEl.textContent = '全';
+      allItemEl.title = 'すべての会社を表示';
+      allItemEl.addEventListener('click', () => {
+        selectedCompanyInitialChar = 'ALL';
+        renderCompaniesList();
+      });
+      companyIndexBar.appendChild(allItemEl);
+
+      const standardGyoOrder = ['あ', 'か', 'さ', 'た', 'な', 'は', 'ま', 'や', 'ら', 'わ', '英', '他'];
+      
+      standardGyoOrder.forEach(gyo => {
+        if (!presentGyoSet.has(gyo)) return;
+
+        const itemEl = document.createElement('div');
+        itemEl.className = `index-item ${selectedCompanyInitialChar === gyo ? 'active' : ''}`;
+        itemEl.textContent = gyo;
+        itemEl.title = `「${gyo}行」で絞り込み表示`;
+        
+        itemEl.addEventListener('click', () => {
+          if (selectedCompanyInitialChar === gyo) {
+            selectedCompanyInitialChar = 'ALL';
+          } else {
+            selectedCompanyInitialChar = gyo;
+          }
+          renderCompaniesList();
+        });
+        companyIndexBar.appendChild(itemEl);
+      });
+
+      setTimeout(() => {
+        document.querySelectorAll('.company-name-text').forEach(el => fitFontSize(el, 0.8));
+        document.querySelectorAll('.copy-box-val').forEach(el => fitFontSize(el, 0.8));
+      }, 0);
     }
 
     function copyDirectText(text, element) {
@@ -1255,6 +1503,38 @@
       }
     }
 
+    /* Mailをメインリストに登録する際のラベル名を「会社名」に設定 */
+    function registerCompanyEmailToCopyList(id, element) {
+      const comp = companiesList.find(c => c.id === id);
+      if (!comp || !comp.email || comp.email === '(未設定)') return;
+
+      const targetGroup = comp.company || '会社・メアド';
+      const targetGroupFurigana = 'クラ';
+      const emailText = comp.email.trim();
+      const itemLabel = comp.company ? comp.company.trim() : 'メールアドレス';
+
+      const exists = copyItems.some(item => 
+        (item.group || '') === targetGroup && item.text === emailText
+      );
+
+      if (!exists) {
+        copyItems.unshift({
+          id: Date.now().toString() + '_email',
+          group: targetGroup,
+          groupFurigana: targetGroupFurigana,
+          label: itemLabel, // ラベル名を会社名に設定
+          text: emailText
+        });
+
+        selectedIndexName = 'クラ';
+
+        saveItems();
+        renderCards();
+      }
+
+      copyDirectText(comp.email, element);
+    }
+
     function closeMemoModal() {
       const memoModalOverlay = document.getElementById('memoModalOverlay');
       const formAddBox = document.getElementById('formAddBox');
@@ -1265,79 +1545,41 @@
       toggleAddBoxBtn.textContent = '＋ 新規追加';
     }
 
-    // コピーリスト追加時のフリガナ頭文字を「★」にする処理
-    function registerCompanyToCopyList(id, button) {
-      const comp = companiesList.find(c => c.id === id);
-      if (!comp) return;
-
-      const targetGroup = comp.company || '会社・メアド';
-      const targetGroupFurigana = '★';
-
-      let addedCount = 0;
-
-      if (comp.email && comp.email.trim() !== '') {
-        copyItems.unshift({
-          id: Date.now().toString() + '_email',
-          group: targetGroup,
-          groupFurigana: targetGroupFurigana,
-          label: 'メールアドレス',
-          text: comp.email
-        });
-        addedCount++;
-      } else {
-        copyItems.unshift({
-          id: Date.now().toString() + '_comp',
-          group: targetGroup,
-          groupFurigana: targetGroupFurigana,
-          label: '会社名',
-          text: comp.company || targetGroup
-        });
-        addedCount++;
-      }
-
-      selectedInitialChar = '★';
-
-      saveItems();
-      renderCards();
-
-      if (button.dataset.isAnimating === 'true') return;
-      button.dataset.isAnimating = 'true';
-
-      const originalText = button.textContent;
-      button.textContent = '成功！';
-      button.classList.add('success');
-
-      setTimeout(() => {
-        button.textContent = originalText;
-        button.classList.remove('success');
-        button.dataset.isAnimating = 'false';
-      }, 1500);
-    }
-
     function toggleEditEmail(id) {
       const idBox = document.getElementById(`comp-id-box-${id}`);
       const idInput = document.getElementById(`comp-accountid-${id}`);
+      const emailBox = document.getElementById(`comp-email-box-${id}`);
       const emailInput = document.getElementById(`comp-email-${id}`);
+      const furiganaInput = document.getElementById(`comp-furigana-${id}`);
       const editBtn = document.getElementById(`edit-btn-${id}`);
 
-      if (emailInput.hasAttribute('readonly')) {
+      if (idInput.style.display === 'none' || idInput.style.display === '') {
         idBox.style.display = 'none';
+        emailBox.style.display = 'none';
         idInput.style.display = 'block';
+        emailInput.style.display = 'block';
+        furiganaInput.style.display = 'block';
         idInput.removeAttribute('readonly');
         emailInput.removeAttribute('readonly');
+        furiganaInput.removeAttribute('readonly');
         editBtn.textContent = '保存';
         editBtn.style.backgroundColor = '#16a34a';
-        idInput.focus();
+        furiganaInput.focus();
       } else {
         idInput.setAttribute('readonly', 'true');
         emailInput.setAttribute('readonly', 'true');
+        furiganaInput.setAttribute('readonly', 'true');
         idInput.style.display = 'none';
+        emailInput.style.display = 'none';
+        furiganaInput.style.display = 'none';
         idBox.style.display = 'flex';
+        emailBox.style.display = 'flex';
         editBtn.textContent = '編集';
         editBtn.style.backgroundColor = '#2563eb';
 
         const target = companiesList.find(c => c.id === id);
         if (target) {
+          target.furigana = furiganaInput.value.trim();
           target.accountId = idInput.value.trim();
           target.email = emailInput.value.trim();
           saveCompanies();
@@ -1354,6 +1596,86 @@
       }
     }
 
+    /* エクスポート機能 */
+    function exportData() {
+      const exportObject = {
+        version: "1.0",
+        exportedAt: new Date().toISOString(),
+        copyItems: copyItems,
+        companiesList: companiesList
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObject, null, 2));
+      const downloadAnchor = document.createElement('a');
+      const nowStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `one_click_copy_backup_${nowStr}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    /* インポート機能 */
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          
+          if (!importedData.copyItems && !importedData.companiesList) {
+            alert('無効なバックアップファイルです。');
+            return;
+          }
+
+          const isOverwrite = confirm('インポート方法を選択してください：\n\n【OK】: 現在のデータを削除して「上書き」する\n【キャンセル】: 現在のデータに「追加・統合」する');
+
+          if (isOverwrite) {
+            if (importedData.copyItems) copyItems = importedData.copyItems;
+            if (importedData.companiesList) companiesList = importedData.companiesList;
+          } else {
+            if (importedData.copyItems) {
+              const existingIds = new Set(copyItems.map(item => item.id));
+              importedData.copyItems.forEach(item => {
+                if (!existingIds.has(item.id)) {
+                  copyItems.push(item);
+                } else {
+                  item.id = Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5);
+                  copyItems.push(item);
+                }
+              });
+            }
+            if (importedData.companiesList) {
+              const existingCompIds = new Set(companiesList.map(comp => comp.id));
+              importedData.companiesList.forEach(comp => {
+                if (!existingCompIds.has(comp.id)) {
+                  companiesList.push(comp);
+                } else {
+                  comp.id = Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5);
+                  companiesList.push(comp);
+                }
+              });
+            }
+          }
+
+          saveItems();
+          saveCompanies();
+          renderCards();
+          renderCompaniesList();
+          alert('インポートが完了しました！');
+
+        } catch (err) {
+          console.error(err);
+          alert('ファイルの読み込みに失敗しました。正しいJSONファイルか確認してください。');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
     // 初期化 & イベントリスナー設定
     document.addEventListener('DOMContentLoaded', () => {
       loadItems();
@@ -1362,7 +1684,6 @@
 
       const openModalBtn = document.getElementById('openModal');
       const openMemoModalBtn = document.getElementById('openMemoModal');
-      const exportDataBtn = document.getElementById('exportDataBtn');
       const modalOverlay = document.getElementById('modalOverlay');
       const memoModalOverlay = document.getElementById('memoModalOverlay');
       const saveBtn = document.getElementById('saveBtn');
@@ -1371,84 +1692,34 @@
       const addCompanyBtn = document.getElementById('addCompanyBtn');
       const formAddBox = document.getElementById('formAddBox');
 
-      const inputGroup = document.getElementById('inputGroup');
+      const exportBtn = document.getElementById('exportBtn');
+      const importBtn = document.getElementById('importBtn');
+      const importFileInput = document.getElementById('importFileInput');
+
       const inputGroupFurigana = document.getElementById('inputGroupFurigana');
 
-      let readingBuffer = '';
-
-      inputGroup.addEventListener('compositionupdate', (e) => {
-        if (e.data) {
-          const pureHira = removeKanji(e.data);
-          if (pureHira) {
-            readingBuffer = pureHira;
-            inputGroupFurigana.value = readingBuffer;
-          }
-        }
-      });
-
-      inputGroup.addEventListener('compositionend', () => {
-        const val = inputGroup.value.trim();
-        const existing = copyItems.find(i => i.group === val);
-
-        if (existing && existing.groupFurigana) {
-          inputGroupFurigana.value = existing.groupFurigana;
-        } else if (readingBuffer) {
-          inputGroupFurigana.value = readingBuffer;
-        } else {
-          inputGroupFurigana.value = removeKanji(inputGroupFurigana.value);
-        }
-      });
-
-      inputGroupFurigana.addEventListener('input', () => {
-        const cleaned = removeKanji(inputGroupFurigana.value);
-        if (inputGroupFurigana.value !== cleaned) {
-          inputGroupFurigana.value = cleaned;
-        }
-      });
-
-      inputGroup.addEventListener('input', (e) => {
-        if (!e.isComposing) {
-          const val = inputGroup.value.trim();
-          if (val === '') {
-            readingBuffer = '';
-            inputGroupFurigana.value = '';
-          } else {
-            const existing = copyItems.find(i => i.group === val);
-            if (existing && existing.groupFurigana) {
-              inputGroupFurigana.value = existing.groupFurigana;
-            } else {
-              const cleanVal = removeKanji(val);
-              if (cleanVal && !inputGroupFurigana.value) {
-                inputGroupFurigana.value = cleanVal;
-              }
-            }
-          }
-        }
-      });
+      if (exportBtn) exportBtn.addEventListener('click', exportData);
+      if (importBtn) importBtn.addEventListener('click', () => importFileInput.click());
+      if (importFileInput) importFileInput.addEventListener('change', importData);
 
       if (openModalBtn) {
         openModalBtn.addEventListener('click', () => {
           editingId = null;
           document.getElementById('modalTitle').textContent = '新しい項目を追加';
           saveBtn.textContent = '追加する';
-          inputGroup.value = '';
           inputGroupFurigana.value = '';
-          readingBuffer = '';
           document.getElementById('inputLabel').value = '';
           document.getElementById('inputText').value = '';
           modalOverlay.classList.add('show');
-          inputGroup.focus();
+          inputGroupFurigana.focus();
         });
       }
 
       if (openMemoModalBtn) {
         openMemoModalBtn.addEventListener('click', () => {
           memoModalOverlay.classList.add('show');
+          renderCompaniesList();
         });
-      }
-
-      if (exportDataBtn) {
-        exportDataBtn.addEventListener('click', exportData);
       }
 
       saveBtn.addEventListener('click', handleSave);
@@ -1474,10 +1745,12 @@
 
       addCompanyBtn.addEventListener('click', () => {
         const newCompanyName = document.getElementById('newCompanyName');
+        const newCompanyFurigana = document.getElementById('newCompanyFurigana');
         const newCompanyId = document.getElementById('newCompanyId');
         const newEmailAddress = document.getElementById('newEmailAddress');
 
         const compVal = newCompanyName.value.trim();
+        const furiVal = newCompanyFurigana.value.trim();
         const idVal = newCompanyId.value.trim();
         const emailVal = newEmailAddress.value.trim();
 
@@ -1486,11 +1759,13 @@
         companiesList.push({
           id: Date.now().toString(),
           company: compVal,
+          furigana: furiVal,
           accountId: idVal,
           email: emailVal
         });
 
         newCompanyName.value = '';
+        newCompanyFurigana.value = '';
         newCompanyId.value = '';
         newEmailAddress.value = '';
         saveCompanies();
@@ -1507,7 +1782,6 @@
         }
       };
 
-      inputGroup.addEventListener('keydown', handleShortcut);
       inputGroupFurigana.addEventListener('keydown', handleShortcut);
       document.getElementById('inputLabel').addEventListener('keydown', handleShortcut);
       document.getElementById('inputText').addEventListener('keydown', handleShortcut);
@@ -1520,5 +1794,4 @@
       });
     });
   </script>
-</body>
-</html>
+</body></html>
